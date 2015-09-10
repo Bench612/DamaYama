@@ -602,7 +602,7 @@ public class MovingGameObject {
 				(int) (y * Space.SIZE) + yOff, (int) (width * Space.SIZE),
 				(int) (height * Space.SIZE));
 
-		if (moveTorward != null) {
+		/*if (moveTorward != null) {
 			if (upDownLock)
 				g.setColor(Color.red);
 			if (leftRightLock)
@@ -611,7 +611,7 @@ public class MovingGameObject {
 					(int) ((y + width / 2) * Space.SIZE + 0.5) + yOff,
 					(int) ((moveTorward.x + 0.5) * Space.SIZE + xOff),
 					(int) ((moveTorward.y + 0.5) * Space.SIZE + yOff + 0.5));
-		}
+		}*/
 
 	}
 
