@@ -78,77 +78,27 @@ public class Weapon {
 			case 0:
 				value = 1 - (accuracy / Math.PI);// wasted ammo
 			case 1:
-				value = (damage * bulletsPerShot / delay) / 0.08; // damage per time
+				value = (damage * bulletsPerShot / delay) / 0.08; // damage per
+																	// time
 				// (ideal)
 				break;
 			case 2:
 				value = ammo * damage / 1200; // total damage
 				break;
 			default:
-				value = ((knockback * bulletsPerShot) / delay) / 0.05; // total knockback
+				value = ((knockback * bulletsPerShot) / delay) / 0.05; // total
+																		// knockback
 				break;
 			}
 			value = Math.min(Math.max(value, 0), 1);
-			polygon
-					.addPoint(
-							(int) (width / 2.0 * value * Math.cos(angle) + x + width / 2.0),
-							(int) (height / 2.0 * value * Math.sin(angle) + y + height / 2.0));
+			polygon.addPoint(
+					(int) (width / 2.0 * value * Math.cos(angle) + x + width / 2.0),
+					(int) (height / 2.0 * value * Math.sin(angle) + y + height / 2.0));
 			outline.addPoint(
 					(int) (x + width / 2 + Math.cos(angle) * width / 2),
 					(int) (y + height / 2 + Math.sin(angle) * height / 2));
 			angle += angleIncrement;
 		}
 		return polygon;
-	}
-}
-
-class Sniper extends Weapon {
-	public Sniper(MovingGameObjectWeapon p) {
-		super(p, 50, 5, 0, 0, 1, 20, 0.0001);
-	}
-
-	public String toString() {
-		return "Sniper " + upgradeCount();
-	}
-}
-
-class Shotgun extends Weapon {
-	public Shotgun(MovingGameObjectWeapon p) {
-		super(p, 20, 0.4, 0.1, Math.PI / 4, 6, 300, 0.1);
-	}
-
-	public String toString() {
-		return "Shotgun " + upgradeCount();
-	}
-}
-
-class SMG extends Weapon {
-	public SMG(MovingGameObjectWeapon p) {
-		super(p, 8, 0.25, 0.1, 0, 1, 200, 0.4);
-	}
-
-	public String toString() {
-		return "SMG " + upgradeCount();
-	}
-}
-
-class MachineGun extends Weapon {
-	public MachineGun(MovingGameObjectWeapon p) {
-		super(p, 4, 0.35, 0, 0, 3, 400, 1);
-	}
-
-	public String toString() {
-		return "Machine Gun " + upgradeCount();
-	}
-}
-
-class BasicWeapon extends Weapon {
-
-	public BasicWeapon(MovingGameObjectWeapon p) {
-		super(p, 20, 0.3, 0.2, 0, 1, Double.POSITIVE_INFINITY, 0.1);
-	}
-
-	public String toString() {
-		return "Pistol " + upgradeCount();
 	}
 }

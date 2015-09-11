@@ -28,7 +28,6 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		add(new MessagePanel(), BorderLayout.EAST);
 		try {
 			files = Map.getMapNames(new Scanner(new File(Map.mapFileName)));
 		} catch (IOException e) {
@@ -54,21 +53,6 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 		new Thread(this).start();
 	}
 
-	class MapShowPanel extends MapPanel {
-		public MapShowPanel(Lobby lobby) {
-			super(false, slant);
-			setBackground(Color.black);
-			try {
-				Map
-						.setNewMapKeep(new Map(new Scanner(new File(
-								lobby.files[0]))));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 	boolean hosting = false;
 	boolean started = false;
@@ -223,4 +207,20 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 
 	boolean quit = false;
 	static String actualGameName = "Game.txt";
+}
+
+class MapShowPanel extends MapPanel {
+	public MapShowPanel(Lobby lobby) {
+		super(false, slant);
+		setBackground(Color.black);
+		try {
+			Map
+					.setNewMapKeep(new Map(new Scanner(new File(
+							lobby.files[0]))));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
