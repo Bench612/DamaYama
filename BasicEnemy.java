@@ -41,7 +41,7 @@ public class BasicEnemy extends Enemy {
 	public void drawSlant(Perspective p) {
 		super.drawSlant(p);
 		// draw head
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
+		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
 				width / 2, direction + Math.PI / 4, 4);
 		ArrayList<Point> bottom = p.getCurrentShape();
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,

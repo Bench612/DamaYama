@@ -18,7 +18,7 @@ class SporeParent extends Enemy {
 
 	public void drawSlant(Perspective p) {
 		super.drawSlant(p);
-		p.drawSphere(x + width / 2, y + height / 2, z + getHeight() * 0.75,
+		p.drawSphere(x + width / 2, y + height / 2, z + getHeight() * 0.8,
 				width / 2, direction + Math.PI / 4, 8, 4);
 
 		p.drawNgon(x + width / 2, y + height / 2, z, width / 2, direction

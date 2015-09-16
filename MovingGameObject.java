@@ -106,6 +106,12 @@ public class MovingGameObject {
 		leaveAll();
 	}
 
+	protected Color getHitColor(MovingGameObject object) {
+		return bloodColor;
+	}
+
+	static Color bloodColor = new Color(183, 29, 29, 100);
+
 	public MovingGameObject(int speedy, double w, double h, double sheild1) {
 		speed = 1.0 / speedy;
 		width = w;
@@ -602,16 +608,13 @@ public class MovingGameObject {
 				(int) (y * Space.SIZE) + yOff, (int) (width * Space.SIZE),
 				(int) (height * Space.SIZE));
 
-		/*if (moveTorward != null) {
-			if (upDownLock)
-				g.setColor(Color.red);
-			if (leftRightLock)
-				g.setColor(Color.green);
-			g.drawLine((int) ((x + width / 2) * Space.SIZE) + xOff,
-					(int) ((y + width / 2) * Space.SIZE + 0.5) + yOff,
-					(int) ((moveTorward.x + 0.5) * Space.SIZE + xOff),
-					(int) ((moveTorward.y + 0.5) * Space.SIZE + yOff + 0.5));
-		}*/
+		/*
+		 * if (moveTorward != null) { if (upDownLock) g.setColor(Color.red); if
+		 * (leftRightLock) g.setColor(Color.green); g.drawLine((int) ((x + width
+		 * / 2) * Space.SIZE) + xOff, (int) ((y + width / 2) * Space.SIZE + 0.5)
+		 * + yOff, (int) ((moveTorward.x + 0.5) * Space.SIZE + xOff), (int)
+		 * ((moveTorward.y + 0.5) * Space.SIZE + yOff + 0.5)); }
+		 */
 
 	}
 

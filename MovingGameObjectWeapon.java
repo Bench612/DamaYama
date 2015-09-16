@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-
 class MovingGameObjectWeapon extends MovingGameObject {
 
 	Weapon weapon;
@@ -158,7 +157,7 @@ class MovingGameObjectWeapon extends MovingGameObject {
 		bulletEndY.add(bY);
 		bulletEndZ.add(bZ);
 		PlayPanel.currentRunning.effects.add(new SphereEffect(bX, bY, bZ,
-				0.1 * Math.pow(weapon.damage, 0.333)));
+				0.1 * Math.pow(weapon.damage, 0.333), object.getHitColor(this)));
 		didHit.add(true);
 	}
 

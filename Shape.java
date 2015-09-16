@@ -46,8 +46,8 @@ class Shape implements Comparable<Shape> {
 		compareZ = points.get(0).gameZ;
 		compareX = Math.abs(p.vanishingX - points.get(0).x);
 		for (int i = 1; i < points.size(); i++) {
-			compareX = Math.min(Math.abs(p.vanishingX - points.get(i).x), compareX);
-			compareY = Math.max(points.get(i).gameY, compareY);
+			compareX = Math.max(compareX, Math.abs(p.vanishingX - points.get(i).x));
+			compareY = Math.min(compareY,points.get(i).gameY);
 			compareZ += points.get(i).gameZ;
 		}
 		compareZ /= points.size();
@@ -55,13 +55,13 @@ class Shape implements Comparable<Shape> {
 	
 
 	public int compareTo(Shape other) {
-		if (compareZ > other.compareZ)
-			return 1;
-		if (compareZ != other.compareZ)
-			return -1;
 		if (compareY > other.compareY)
 			return 1;
 		if (compareY != other.compareY)
+			return -1;
+		if (compareZ > other.compareZ)
+			return 1;
+		if (compareZ != other.compareZ)
 			return -1;
 		if (compareX < other.compareX)
 			return 1;

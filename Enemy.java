@@ -26,11 +26,11 @@ class Enemy extends MovingGameObjectWeapon {
 	}
 
 	public void drawSlant(Perspective p) {
+		super.drawSlant(p);
 		if (timeSinceHealthChange <= 100)
 			drawHealthBarSlant(p);
 		p.setColor(color);
 		p.setOutline(color.darker());
-		super.drawSlant(p);
 	}
 
 	public void update() {
