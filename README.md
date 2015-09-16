@@ -1,9 +1,5 @@
 # DamaYama
-<<<<<<< HEAD
-A top-down style shooting game. Shoot down endless waves of enemies. Inspired by Box Head and Halo.
-=======
-A top-down style shooting game. Last as long as you can before the waves of enemies consume you or shoot you down.
->>>>>>> origin/master
+A top-down style shooting game. Last as long as you can before the waves of enemies consume you or shoot you down. Inspired by Box Head and Halo.
 
 compile using "javac DamaYama.java" and run using "java DamaYama"
 
