@@ -19,6 +19,21 @@ class Enemy extends MovingGameObjectWeapon {
 	}
 
 	public void draw(Graphics g, int xOff, int yOff) {
+		if (attackTime >= 0) {
+			g.setColor(Color.black);
+			int attackAngle = maxAttackAngle * attackTime / maxAttackTime;
+			int attackDirection = (int) Math.toDegrees(direction);
+			g.fillArc((int) ((x - attackRange / 2) * Space.SIZE + xOff),
+					(int) ((y - attackRange / 2) * Space.SIZE) + yOff,
+					(int) ((width + attackRange) * Space.SIZE),
+					(int) ((height + attackRange) * Space.SIZE),
+					attackDirection + attackAngle / 2 + armAngle, -armAngle);
+			g.fillArc((int) ((x - attackRange / 2) * Space.SIZE + xOff),
+					(int) ((y - attackRange / 2) * Space.SIZE) + yOff,
+					(int) ((width + attackRange) * Space.SIZE),
+					(int) ((height + attackRange) * Space.SIZE),
+					attackDirection - attackAngle / 2 - armAngle, armAngle);
+		}
 		g.setColor(color);
 		super.draw(g, xOff, yOff);
 		if (timeSinceHealthChange <= 100)

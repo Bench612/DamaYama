@@ -167,11 +167,11 @@ public class Perspective {
 	public void drawNgon(double x, double y, double z, double radius,
 			double angle, int n) {
 		startNewShape(x + (radius * Math.cos(angle)),
-				y + (radius * Math.sin(angle)), z, n);
+				y - (radius * Math.sin(angle)), z, n);
 		for (int i = 1; i < n; i++) {
 			double newAngle = angle + (Math.PI * 2 * i) / n;
 			addPoint(getScreenPoint(x + (radius * Math.cos(newAngle)), y
-					+ (radius * Math.sin(newAngle)), z));
+					- (radius * Math.sin(newAngle)), z));
 		}
 	}
 

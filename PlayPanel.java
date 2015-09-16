@@ -268,8 +268,6 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 				keys[MANUAL_AIM] = false;
 			} else
 				drawType = topDown;
-		} else if (e.getKeyCode() == KeyEvent.VK_TAB) {
-
 		}
 		mainSleepSpeed = Math.max(Math.min(20, mainSleepSpeed), 0);
 	}
@@ -305,6 +303,9 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 			break;
 		case KeyEvent.VK_5:
 			keys[FIVE] = value;
+			break;
+		case KeyEvent.VK_SHIFT:
+			keys[SHOOT] = value;
 			break;
 		}
 	}

@@ -62,10 +62,10 @@ class Jackal extends ShootingEnemy {
 
 		// draw head
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.8,
-				width / 2, direction + Math.PI / 5, 3);
+				width / 2, direction, 3);
 		ArrayList<Point> bottom = p.getCurrentShape();
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
-				direction + Math.PI / 5, 3);
+				direction, 3);
 		ArrayList<Point> top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
