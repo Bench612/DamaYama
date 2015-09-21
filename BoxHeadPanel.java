@@ -5,13 +5,14 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.ArrayList;
 
+import javax.swing.JPanel;
 
 class BoxHeadPanel extends PlayPanel {
 	static int wave = 0;
 
-	public BoxHeadPanel() {
-		super();
-		innerPanel = new StatPanel(this);
+	public BoxHeadPanel(DamaYama frame) {
+		super(frame);
+		innerPanel = new StatsPanel(this);
 		running = true;
 		new Thread(this).start();
 	}
@@ -41,7 +42,7 @@ class BoxHeadPanel extends PlayPanel {
 	private void startNewWave() {
 		wave++;
 		spawnsThisWave = 0;
-		displayMessage("Wave " + wave);
+		displayMessage("Wave " + (wave + 1));
 	}
 
 	public double numberForWave() {
@@ -55,10 +56,10 @@ class BoxHeadPanel extends PlayPanel {
 
 	public void updateSpawns() {
 		super.updateSpawns();
-		if (spawnsThisWave >= numberForWave()) {
+		if (spawnsThisWave >= numberForWave() && toSpawn.isEmpty()) {
 			if (gameObjects.size() == players.size())
 				startNewWave();
-		} else if (timeSinceLastSpawn > 1 / (spawnCoeffecient * (wave + 1) / 100)) {
+		} else if (timeSinceLastSpawn > 100 / (spawnCoeffecient * (wave + 1))) {
 			double random = DamaYama.random();
 			if (random > .4)
 				addGameObject(new BasicEnemy());
@@ -75,8 +76,7 @@ class BoxHeadPanel extends PlayPanel {
 
 	int timeSinceLastSpawn = 0;
 
-	double spawnCoeffecient = 1;
-	double decayCoeffecient = 0.00003;
+	double spawnCoeffecient = 0.33;
 
 	public void paintComponent(Graphics g) {
 		if (!started)
@@ -109,5 +109,53 @@ class BoxHeadPanel extends PlayPanel {
 	public void addNewWeapon(Weapon w) {
 		if (getPlayer().getWeapon(w.getClass()) == null)
 			getPlayer().addNewWeapon(w);
+	}
+
+}
+
+class StatsPanel extends JPanel {
+	PlayPanel play;
+
+	public int getAccuracy() {
+		try {
+			return (int) Math.round((double) play.getPlayer().hits
+					/ (play.getPlayer().misses + play.getPlayer().hits) * 100);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public int getHealth() {
+		try {
+			return (int) Math
+					.round((double) play.getPlayer().getHealth() * 100);
+		} catch (Exception e) {
+			return 100;
+		}
+	}
+
+	public double getDMG() {
+		try {
+			return -Math.round(play.getPlayer().totalDamage * 100);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public StatsPanel(BoxHeadPanel p) {
+		play = p;
+	}
+
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.setColor(Color.black);
+		g.drawString("Wave :" + (BoxHeadPanel.wave + 1), 0, g.getFontMetrics()
+				.getHeight());
+		g.drawString("Accuracy :" + getAccuracy() + "%", 0, (int) (g
+				.getFontMetrics().getHeight() * 2.5));
+		g.drawString("Health :" + getHealth() + "%", 0, (int) (g
+				.getFontMetrics().getHeight() * 4));
+		g.drawString("Damage :" + getDMG(), 0, (int) (g.getFontMetrics()
+				.getHeight() * 5.5));
 	}
 }

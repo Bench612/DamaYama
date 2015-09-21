@@ -1,4 +1,5 @@
 import java.awt.Color;
+import drawing.*;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
@@ -31,13 +32,8 @@ public class Wall extends SolidSpace {
 	}
 
 	public void drawSlant(Perspective p) {
-		p.setColor(Color.gray);
+		p.setColor(EmptySpace.defaultColor);
 		super.drawSlant(p);
-	}
-
-	public void drawSlantNoOverlap(Perspective p) {
-		p.setColor(Color.gray);
-		super.drawSlantNoOverlap(p);
 	}
 
 	public boolean allowPass(Weapon w) {
@@ -77,7 +73,7 @@ class TallWall extends Wall {
 	}
 
 	public void draw(Graphics g, int x, int y) {
-		super.draw(g,x,y);
+		super.draw(g, x, y);
 		g.setColor(Color.gray.brighter());
 		g.fillPolygon(new int[] { x, x, x + SIZE / 2 }, new int[] { y,
 				y + SIZE, y + SIZE / 2 }, 3);

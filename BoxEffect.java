@@ -1,4 +1,5 @@
 import java.awt.Color;
+import drawing.*;
 import java.util.ArrayList;
 
 class BoxEffect extends Effect{

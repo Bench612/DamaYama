@@ -1,13 +1,15 @@
+package drawing;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.*;
 
-//torward the vanishing is the y axis
+//torward the vanishing is the y axis (negative is moving towards it)
 //straight up is the z axis
 //horizontal is the x axis
 public class Perspective {
-	// all the ints are in screen pixels
+	// the vanishing x,y are in screen pixels
 	int vanishingX;
 	int vanishingY;
 	// a base point preferrable (0,0,0)
@@ -23,8 +25,36 @@ public class Perspective {
 
 	Graphics g;
 
+	// these are for drawing
+	ConvexPolygon polygon;
+	ArrayList<Point> shape;
+	ArrayList<Drawable> drawables = new ArrayList<Drawable>(10000);
+	int maxWidth, maxHeight;
+
 	public void setColor(Color c) {
 		g.setColor(c);
+	}
+
+	public Color getColor() {
+		return g.getColor();
+	}
+
+	public void shiftZero(int x, int y) {
+		zero.x += x;
+		zero.y += y;
+	}
+
+	public void shiftVanishing(int x, int y) {
+		vanishingX += x;
+		vanishingY += y;
+	}
+
+	public int getVanishingX() {
+		return vanishingX;
+	}
+
+	public int getVanishingY() {
+		return vanishingY;
 	}
 
 	public void setOutline(Color c) {
@@ -40,23 +70,35 @@ public class Perspective {
 		scaleY = 1;
 	}
 
-	// always draw sides, then front, then top
-	// these are for drawing
-	ArrayList<Point> shape = new ArrayList<Point>(4);
-	ArrayList<Shape> shapesToDraw = new ArrayList<Shape>(10000);
-
-	public void update(Graphics g1, double x, double y, double z, double s) {
+	public void update(Graphics g1, double x, double y, double z, double s,
+			int maxScreenWidth, int maxScreenHeight) {
 		g = g1;
 		translateX = x;
 		translateY = y;
 		translateZ = z;
 		scale = Perspective.absoluteCoefficientOfVanishing * 50 * s;
 		scaleY = 50 * s;
-		shapesToDraw.clear();
+		drawables.clear();
+		maxWidth = maxScreenWidth;
+		maxHeight = maxScreenHeight;
+	}
+
+	public void startNewConvexPolygon(int size) {
+		polygon = new ConvexPolygon(size);
+	}
+
+	public void finishConvexPolygon() {
+		if (!polygon.faces.isEmpty())
+			drawables.add(polygon);
+		polygon = null;
 	}
 
 	public ArrayList<Point> getCurrentShape() {
 		return shape;
+	}
+
+	public Point getZero() {
+		return zero;
 	}
 
 	public void setShape(ArrayList<Point> current) {
@@ -93,11 +135,18 @@ public class Perspective {
 		addShape(new Shape(shape1), true);
 	}
 
-	private void addShape(Shape s, boolean toFill) {
-		shapesToDraw.add(s);
-		s.color = g.getColor();
-		s.fill = toFill;
-		s.outline = outlineColor;
+	private boolean addShape(Shape s, boolean toFill) {
+		if (s.getTotalArea() >= 3 && s.inBounds(maxWidth, maxHeight)) {
+			if (polygon == null)
+				drawables.add(s);
+			else
+				polygon.addShape(s);
+			s.color = g.getColor();
+			s.fill = toFill;
+			s.outline = outlineColor;
+			return true;
+		}
+		return false;
 	}
 
 	public void drawShape(Shape shape1) {
@@ -189,6 +238,7 @@ public class Perspective {
 			bottom = top;
 		}
 	}
+
 	public void drawSphere(double x, double y, double z, double radius,
 			double angle, int sides, int levels) {
 		drawNgon(x, y, z - radius, 0, angle, sides);
@@ -203,6 +253,7 @@ public class Perspective {
 			bottom = top;
 		}
 	}
+
 	public static final double absoluteCoefficientOfVanishing = 1 / Math.log(2);
 
 	public double getScreenY(double y, int startHeight) {
@@ -232,7 +283,7 @@ public class Perspective {
 				+ translateZ);
 	}
 
-	public void update(ArrayList<Point> points) {
+	void update(ArrayList<Point> points) {
 		for (int i = 0; i < points.size(); i++)
 			points.get(i).reEvalutate(this);
 	}
@@ -267,27 +318,13 @@ public class Perspective {
 				/ (Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)));
 	}
 
-	public void draw(int maxWidth, int maxHeight) {
-		for (int i = 0; i < shapesToDraw.size();) {
-			if (shapesToDraw.get(i).inBounds(maxWidth, maxHeight)) {
-				if (shapesToDraw.get(i).getTotalArea() < 3)
-					shapesToDraw.remove(i);
-				else {
-					shapesToDraw.get(i).update(this);
-					i++;
-				}
-			} else
-				shapesToDraw.remove(i);
-		}
-		if (shapesToDraw.size() > 0) {
-			Collections.sort(shapesToDraw);
-			for (int i = 0; i < shapesToDraw.size(); i++) {
-				if (shapesToDraw.get(i).fill) {
-					g.setColor(shapesToDraw.get(i).color);
-					fillShapeAbsolute(shapesToDraw.get(i).points);
-				}
-				g.setColor(shapesToDraw.get(i).outline);
-				drawShapeAbsolute(shapesToDraw.get(i).points);
+	public void draw() {
+		for (int i = 0; i < drawables.size(); i++)
+			drawables.get(i).updateCompareValues(this);
+		if (drawables.size() > 0) {
+			Collections.sort(drawables);
+			for (int i = 0; i < drawables.size(); i++) {
+				drawables.get(i).draw(this);
 			}
 		}
 	}

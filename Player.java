@@ -1,4 +1,8 @@
 import java.awt.*;
+
+import drawing.*;
+import drawing.Point;
+
 import java.util.ArrayList;
 
 public class Player extends MovingGameObjectWeapon {
@@ -239,27 +243,52 @@ public class Player extends MovingGameObjectWeapon {
 		}
 	}
 
+	static Color aimColor = new Color(255, 255, 30, 100);
+
 	public void drawSlant(Perspective p) {
 		super.drawSlant(p);
 		if (this == PlayPanel.currentRunning.getPlayer()) {
+
+			p.setOutline(aimColor);
+			p.setColor(aimColor);
+			double angle = Math.atan2(getShootDirectionY(),
+					getShootDirectionX());
+			p.startNewShape(x + width / 2, y + height / 2, z + getHeight() / 2,
+					2);
+			p.addPoint(p.getScreenPoint(
+					x + width / 2
+							+ (Math.cos(angle - (weapon.accuracy + weapon.spread) / 2) * 3),
+					y + width / 2
+							+ (Math.sin(angle - (weapon.accuracy + weapon.spread) / 2) * 3),
+					z + getHeight() / 2));
+			p.addPoint(p.getScreenPoint(
+					x + width / 2
+							+ (Math.cos(angle + (weapon.accuracy + weapon.spread) / 2) * 3),
+					y + width / 2
+							+ (Math.sin(angle + (weapon.accuracy + weapon.spread) / 2) * 3),
+					z + getHeight() / 2));
+			p.fillShape(p.getCurrentShape());
+
 			p.setColor(Color.black);
 			p.setOutline(Color.DARK_GRAY);
 		} else {
 			p.setColor(Color.gray);
 			p.setOutline(Color.DARK_GRAY);
 		}
+
 		// draw head
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
 				width / 2, direction + Math.PI / 4, 4);
-		ArrayList<Point> bottom = p.getCurrentShape();
+		ArrayList<drawing.Point> bottom = p.getCurrentShape();
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
 				direction + Math.PI / 4, 4);
-		ArrayList<Point> top = p.getCurrentShape();
+		ArrayList<drawing.Point> top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
 
 		// drawBody
+		p.startNewConvexPolygon(6);
 		p.drawNgon(x + width / 2, y + height / 2, z, width / 2 * 0.75,
 				direction + Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
@@ -269,13 +298,20 @@ public class Player extends MovingGameObjectWeapon {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
+
+		double attackPerc = 0;
+		double attackRange = width * 0.5;
 
 		// draw arm1
+		p.startNewConvexPolygon(6);
 		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
-				* (width / 2),
+				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction + Math.PI / 2)
-						* (height / 2), z + getHeight() * 0.2, 0.1, direction
-						+ Math.PI / 4, 4);
+						* (height / 2) + Math.sin(direction) * attackPerc
+						* attackRange, z + (getHeight() * 0.2)
+						* (1 - attackPerc) + getHeight() * 0.4 * attackPerc, 0,
+				direction + Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
 		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2),
@@ -286,13 +322,17 @@ public class Player extends MovingGameObjectWeapon {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
 
 		// draw arm2
+		p.startNewConvexPolygon(6);
 		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
-				* (width / 2),
+				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction - Math.PI / 2)
-						* (height / 2), z + getHeight() * 0.2, 0.1, direction
-						- Math.PI / 4, 4);
+						* (height / 2) + Math.sin(direction) * attackPerc
+						* attackRange, z + (getHeight() * 0.2)
+						* (1 - attackPerc) + getHeight() * 0.4 * attackPerc, 0,
+				direction - Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
 		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 				* (width / 2),
@@ -303,15 +343,18 @@ public class Player extends MovingGameObjectWeapon {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
 
 		// draw bomb
 		if (bomb != null) {
+			p.startNewConvexPolygon(5);
 			Map.drawSquare(p, bomb.x, bomb.y, bomb.z, bomb.width);
 			top = p.getCurrentShape();
 			Map.drawSquare(p, bomb.x, bomb.y, bomb.z + bomb.height, bomb.width);
 			bottom = p.getCurrentShape();
 			p.fillForm(p.createForm(top, bottom));
 			p.fillShape(top);
+			p.finishConvexPolygon();
 		}
 		drawHealthBarSlant(p);
 	}

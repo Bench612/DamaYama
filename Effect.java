@@ -1,4 +1,5 @@
 import java.awt.Graphics;
+import drawing.*;
 
 class Effect {
 	int timeLeft;

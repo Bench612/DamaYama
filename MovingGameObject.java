@@ -1,4 +1,5 @@
 import java.awt.Color;
+import drawing.*;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -179,8 +180,7 @@ public class MovingGameObject {
 		if (PlayPanel.currentRunning.players.size() == 0)
 			return;
 		Space currentSp = currentSpace();
-		if (currentSp == moveTorward || moveTorward == null || upDownLock
-				|| leftRightLock) {
+		if (currentSp == moveTorward || moveTorward == null || stuck) {
 			moveTorward = null;
 			Space bestSpace = currentSpace();
 			// check all adjacentSpaces
@@ -242,79 +242,29 @@ public class MovingGameObject {
 		moveTorward = s;
 	}
 
-	boolean upDownLock = false;
-	boolean leftRightLock = false;
+	boolean stuck = false;
 
 	public void moveTorward(double x1, double y1, double z1) {
 		if (z1 > z)
 			this.jump();
 		intersection = null;
-		boolean moveLeftRight = false;
-		if (x1 + speed < x + width / 2 || leftRightLock) {
-			if (leftRightLock)
-				moveLeftRight = moveRight();
-			else if (!moveLeftRight && moveLeft()) {
-				moveLeftRight = true;
-			}
-		}
-		if (!moveLeftRight && (x1 - speed > x + width / 2 || leftRightLock)) {
-			if (leftRightLock) {
-				moveLeftRight = moveLeft();
-			}
-			if (!moveLeftRight && moveRight()) {
-				moveLeftRight = true;
-			}
-		}
+		stuck = true;
+		if (x1 < x + width / 2) { // moveLeft
+			if (moveRight(Math.max(x1 - (x + width / 2), -speed)))
+				stuck = false;
+		} else if (x1 > x + width / 2) // moveRight
+			if (moveRight(Math.min(x1 - (x + width / 2), speed)))
+				stuck = false;
 
-		if (!moveLeftRight && leftRightLock) {
-			moveTorward = null;
-			upDownLock = true;
-			leftRightLock = false;
-		} else
-			leftRightLock = false;
-
-		boolean moveUpDown = false;
-		if (y1 + speed < y + height / 2 || upDownLock) {
-			if (upDownLock) {
-				moveUpDown = moveDown();
-			}
-			if (!moveUpDown && moveUp()) {
-				moveUpDown = true;
-			}
-		}
-		if (!moveUpDown && (y1 - speed > y + height / 2 || upDownLock)) {
-			if (upDownLock) {
-				moveUpDown = moveUp();
-			}
-			if (!moveUpDown && moveDown()) {
-				moveUpDown = true;
-			}
-		}
-
-		if (!moveUpDown && upDownLock) {
-			moveTorward = null;
-			upDownLock = false;
-			leftRightLock = true;
-		} else
-			upDownLock = false;
-
-		leftRightLock &= moveUpDown;
+		if (y1 < y + height / 2) { // move up
+			if (moveDown(Math.max(y1 - (y + height / 2), -speed)))
+				stuck = false;
+		} else if (y1 > y + height / 2) // move down
+			if (moveDown(Math.min(y1 - (y + height / 2), speed)))
+				stuck = false;
 
 		if (intersection instanceof Player)
 			atObstacle(intersection);
-		else {
-			if (!moveLeftRight && !moveUpDown) {
-				if (leftRightLock) {
-					leftRightLock = false;
-					upDownLock = true;
-				} else if (upDownLock) {
-					upDownLock = false;
-					leftRightLock = true;
-				} else {
-					upDownLock = true;
-				}
-			}
-		}
 	}
 
 	public void updateXSquares() {
@@ -539,6 +489,7 @@ public class MovingGameObject {
 		p.setOutline(healthColor);
 		double barMaxWidth = width * 1.1;
 		double barWidth = barMaxWidth * health;
+		p.startNewConvexPolygon(6);
 		p.startNewShape(x + (width - barMaxWidth) / 2 + 0.05, y + width / 2
 				+ 0.05, z + getHeight() + 0.2, 4);
 		p.drawYLine(-0.1);
@@ -556,6 +507,7 @@ public class MovingGameObject {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
 	}
 
 	protected boolean canLeaveAll() {

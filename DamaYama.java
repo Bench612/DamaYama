@@ -1,12 +1,16 @@
 import java.util.*;
+
+import drawing.*;
+import drawing.Point;
+
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
 import java.awt.*;
 
 public class DamaYama extends JFrame {
-	public static DamaYama frame;
 	private static Random random = new Random(0);
 	public static Color orange = new Color(235, 169, 116);
 	public static Color blue = new Color(65, 173, 214);
@@ -14,7 +18,6 @@ public class DamaYama extends JFrame {
 
 	public DamaYama(String s) {
 		super(s);
-		frame = this;
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		logo = toolkit.getImage("damayama_logoLarge.png");
 		icon = toolkit.getImage("damayama_logoSmall.png");
@@ -23,8 +26,7 @@ public class DamaYama extends JFrame {
 
 	public static void main(String[] args) {
 		if (args.length == 1 && args[0].equals("master")) {
-			new MasterDama();
-			new MapOpenFrame();
+			new MapOpenFrame(new MasterDama());
 		} else {
 			if (args.length != 0)
 				Lobby.actualGameName = args[0];
@@ -40,22 +42,14 @@ public class DamaYama extends JFrame {
 		random.setSeed(llong);
 	}
 
-	public static void repaintStatic() {
-		frame.validate();
-	}
-
-	public static void switchTo(DamaPanel p) {
-		frame.setContentPane(p);
-		repaintStatic();
-	}
-
-	public static void resetStatic() {
-		frame.reset();
-		repaintStatic();
+	public void switchTo(DamaPanel p) {
+		setContentPane(p);
+		validate();
 	}
 
 	public void reset() {
-		Map.setNewMap(Map.getCurrent());
+		Map.setNewMap(this, Map.getCurrent());
+		validate();
 	}
 
 	static Image logo;
@@ -65,7 +59,7 @@ public class DamaYama extends JFrame {
 class BasicDama extends DamaYama implements WindowListener {
 	public BasicDama() {
 		super("Dama Yama");
-		setContentPane(new MainMenuPanel());
+		setContentPane(new MainMenuPanel(this));
 		this.setBounds(0, 0, 0, 0);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setResizable(false);
@@ -75,23 +69,25 @@ class BasicDama extends DamaYama implements WindowListener {
 		// .getDefaultScreenDevice().setFullScreenWindow(this);// makes it
 		// fullscreen
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
-		username = Math.random()*100 + "";
+		username = Math.random() * 100 + "";
 		if (username.equals(""))
 			username = "Guest";
 		setVisible(true);
 	}
 
 	public void reset() {
-		switchTo(new MainMenuPanel());
+		switchTo(new MainMenuPanel(this));
 	}
 
 	class MainMenuPanel extends ShinyPanel implements Runnable, FocusListener,
 			MouseListener, MouseMotionListener {
 		Perspective perspective;
 		String[] menuItems;
+		DamaYama frame;
 
-		public MainMenuPanel() {
+		public MainMenuPanel(DamaYama frame) {
 			super(30);
+			this.frame = frame;
 			for (int i = 0; i < 2; i++) {
 				pointX.add(-1000d);
 				pointY.add(-1000d);
@@ -154,6 +150,10 @@ class BasicDama extends DamaYama implements WindowListener {
 						}
 						previousX = mouseX;
 						previousY = mouseY;
+
+						additionalYOff += 0.15;
+						if (additionalYOff > 220)
+							additionalYOff = 220;
 						Thread.sleep(20);
 						repaint();
 					}
@@ -171,37 +171,27 @@ class BasicDama extends DamaYama implements WindowListener {
 		public void paintComponent(Graphics g) {
 			clearScreen(g);
 			if (perspective == null) {
-				if (getWidth() > 0 && getHeight() > 0){
+				if (getWidth() > 0 && getHeight() > 0) {
 					perspective = new Perspective(0, getHeight(),
 							getWidth() * 5 / 6, getHeight() / 6);
-				}
-				else {
+				} else {
 					super.paintComponent(g);
 					return;
 				}
 			}
-			perspective.update(g, 0, -200 + additionalYOff, 0, 1);
-			additionalYOff += 0.15;
+			perspective.update(g, 0, -200 + additionalYOff, 0, 1, getWidth(),
+					getHeight());
 			perspective.setColor(Color.DARK_GRAY);
-			if (additionalYOff > 220)
-				additionalYOff = 220;
-			else if (additionalYOff < 201) {
-				for (int x = -50; x < 80; x += 4)
+			if (additionalYOff < 201) {
+				for (int x = -90; x < 80; x += 8)
 					for (int y = 0; y <= 200 - (int) Math
-							.floor(additionalYOff / 4) * 4; y += 4) {
-						Map.drawSquare(perspective, x, y, (200 - y) / 50.0, 4);
+							.floor(additionalYOff / 4) * 4; y += 8) {
+						Map.drawSquare(perspective, x, y, (200 - y) / 50.0, 8);
 						ArrayList<Point> top = perspective.getCurrentShape();
-						Map.drawSquare(perspective, x, y, 0, 4);
+						Map.drawSquare(perspective, x, y, 0, 8);
 						perspective.drawForm(perspective.createForm(top,
 								perspective.getCurrentShape()));
 					}
-			}
-			double velocityX = -(mouseX - previousX);
-			double velocityY = -(mouseY - previousY);
-			if (velocityX != 0 || velocityY != 0) {
-				double angle = Math.atan2(velocityY, velocityX);
-				velocityX = Math.cos(angle);
-				velocityY = Math.sin(angle);
 			}
 			// draw a huge ass cone thing
 			double maxHeight = 4;
@@ -211,15 +201,15 @@ class BasicDama extends DamaYama implements WindowListener {
 			double z = maxHeight;
 			double width = maxWidth;
 			double limit = 0;
-			if (additionalYOff <= 100)
-				limit = 1 - (additionalYOff / 100);
-			for (; width > maxWidth * limit; width -= 4) {
+			if (additionalYOff <= 75)
+				limit = 1 - (additionalYOff / 75);
+			for (; width > maxWidth * limit; width -= 8) {
 				Map.drawSquare(perspective, centerX - width / 2, centerY
 						- width / 2, z, width);
 				z -= 0.2;
 				perspective.drawShape(perspective.getCurrentShape());
 			}
-			perspective.draw(getWidth(), getHeight());
+			perspective.draw();
 			super.paintComponent(g);
 			if (DamaYama.logo.getWidth(this) > 0) {
 				double scale = maxRadius * 1.5 / DamaYama.logo.getWidth(this);
@@ -313,16 +303,16 @@ class BasicDama extends DamaYama implements WindowListener {
 						&& mouseY > topY && mouseY < topY + stringHeight) {
 					switch (i) {
 					case 0:
-						DamaYama.switchTo(new SinglePlayerLobby());
+						switchTo(new SinglePlayerLobby(frame));
 						break;
 					case 2:
 						new MasterDama();
 						break;
 					case 1:
-						DamaYama.switchTo(new Lobby());
+						switchTo(new Lobby(frame));
 						break;
 					case 3:
-						DamaYama.switchTo(new ReplayPanel(Lobby.actualGameName));
+						switchTo(new ReplayPanel(frame, Lobby.actualGameName));
 						break;
 					case 4:
 						System.exit(0);
@@ -589,9 +579,9 @@ class MasterDama extends DamaYama implements ActionListener {
 		if (e.getActionCommand().equals("save"))
 			new MapSaveFrame(Map.getCurrent());
 		else if (e.getActionCommand().equals("new"))
-			new MapNewFrame();
+			new MapNewFrame(this);
 		else if (e.getActionCommand().equals("open"))
-			new MapOpenFrame();
+			new MapOpenFrame(this);
 		else if (e.getActionCommand().equals("stretch")) {
 			String stretch = JOptionPane.showInputDialog(this,
 					"By what factor would you like to stretch the map?");
@@ -600,29 +590,31 @@ class MasterDama extends DamaYama implements ActionListener {
 			} catch (Exception e2) {
 			}
 		} else if (e.getActionCommand().equals("play")) {
-			setContentPane(new BoxHeadPanel());
-			repaintStatic();
+			setContentPane(new BoxHeadPanel(this));
+			validate();
 		} else if (e.getActionCommand().equals("host")) {
 			String s = JOptionPane.showInputDialog(
 					"What game name would you like to host?", "Game.txt");
 			String s2 = JOptionPane.showInputDialog("How many players?", "2");
 			try {
-				setContentPane(new MultiPlayerPanel(Integer.parseInt(s2), s, ""));
+				setContentPane(new MultiPlayerPanel(this, Integer.parseInt(s2),
+						s, ""));
 			} catch (Exception e2) {
 			}
-			repaintStatic();
+			validate();
 		} else if (e.getActionCommand().equals("join")) {
 			String s = JOptionPane.showInputDialog(
 					"What game name would you like to join?", "Game.txt");
-			setContentPane(new MultiPlayerPanel(s));
-			repaintStatic();
+			setContentPane(new MultiPlayerPanel(this, s));
+			validate();
 		} else if (e.getActionCommand().equals("replay")) {
 			String s = JOptionPane.showInputDialog(
-					"What game name would you like to replay?", "LastReplay.txt");
-			setContentPane(new ReplayPanel(s));
-			repaintStatic();
+					"What game name would you like to replay?",
+					"LastReplay.txt");
+			setContentPane(new ReplayPanel(this, s));
+			validate();
 		} else if (e.getActionCommand().equals("current")) {
-			Map.setNewMap(Map.getCurrent());
+			Map.setNewMap(this, Map.getCurrent());
 		}
 	}
 }

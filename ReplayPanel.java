@@ -1,9 +1,8 @@
 import java.awt.event.KeyEvent;
 
-
 class ReplayPanel extends MultiPlayerPanel {
-	public ReplayPanel(String file) {
-		super(file);
+	public ReplayPanel(DamaYama frame, String file) {
+		super(frame, file);
 	}
 
 	public boolean write(byte[] bytes) {

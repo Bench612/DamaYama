@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import drawing.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.AdjustmentEvent;
@@ -59,16 +60,16 @@ class MapPanel extends DamaPanel implements MouseMotionListener, MouseListener,
 			} else {
 				if (e.getX() != dragStartShiftX) {
 					if (e.isMetaDown()) {
-						p.zero.x += e.getX() - dragStartShiftX;
+						p.shiftZero(e.getX() - dragStartShiftX, 0);
 					} else {
-						p.vanishingX += e.getX() - dragStartShiftX;
-						p.vanishingY += e.getY() - dragStartShiftY;
+						p.shiftVanishing(e.getX() - dragStartShiftX, e.getY()
+								- dragStartShiftY);
 						dragStartShiftY = e.getY();
 					}
 					dragStartShiftX = e.getX();
 				}
 				if (e.getY() != dragStartShiftY && e.isMetaDown()) {
-					p.zero.y += e.getY() - dragStartShiftY;
+					p.shiftZero(0, e.getY() - dragStartShiftY);
 					dragStartShiftY = e.getY();
 				}
 			}
@@ -95,7 +96,8 @@ class MapPanel extends DamaPanel implements MouseMotionListener, MouseListener,
 		int origMouseX = endX;
 		int origMouseY = endY;
 		updateCurrentMouse(e);
-		if ((origMouseX != endX || origMouseY != endY) && inBounds(endX, endY)) {
+		if ((origMouseX != endX || origMouseY != endY) && inBounds(endX, endY)
+				&& drawType == topDown) {
 			this.setToolTipText(Map.getCurrent().spaces[endX][endY]
 					.getDescription());
 		}
@@ -277,7 +279,8 @@ class MapPanel extends DamaPanel implements MouseMotionListener, MouseListener,
 			if (p == null)
 				p = new Perspective(getWidth() / 2, getHeight() / 2,
 						getWidth() / 2 - 1500, getHeight() / 2 - 3000);
-			p.update(g, xSlantOff, ySlantOff, zSlantOff, 1);
+			p.update(g, xSlantOff, ySlantOff, zSlantOff, 1, getWidth(),
+					getHeight());
 			drawSlant(g);
 		}
 			break;
@@ -290,25 +293,17 @@ class MapPanel extends DamaPanel implements MouseMotionListener, MouseListener,
 	double xSlantOff, ySlantOff, zSlantOff;
 
 	public void drawSlant(Graphics g) {
-		g.setColor(Color.black);
-		g.fillOval((int) p.zero.x, (int) p.zero.y, 3, 3);
 		g.setColor(Color.RED);
-		g.fillOval(p.vanishingX, p.vanishingY, 3, 3);
+		g.fillOval(p.getVanishingX(), p.getVanishingY(), 3, 3);
 
-		for (int b = 0; b < Map.getCurrent().spaces[0].length; b++) {
-			for (int i = 0; i < Map.getCurrent().spaces.length; i++) {
-				Map.getCurrent().spaces[i][b].drawSlantOverlap(p);
-			}
+		for (int b = Map.getCurrent().spaces[0].length - 1; b >= 0; b--) {
 			for (int i = 0; i < Map.getCurrent().spaces.length; i++) {
 				Map.getCurrent().spaces[i][b].drawSlant(p);
-			}
-			for (int i = 0; i < Map.getCurrent().spaces.length; i++) {
-				Map.getCurrent().spaces[i][b].drawSlantNoOverlap(p);
 			}
 		}
 		for (int i = 0; i < effects.size(); i++)
 			effects.get(i).drawSlant(p);
-		p.draw(getWidth(), getHeight());
+		p.draw();
 	}
 
 	public void drawTopDown(Graphics g) {

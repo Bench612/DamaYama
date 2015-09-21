@@ -1,3 +1,4 @@
+import drawing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -21,15 +22,16 @@ public class BasicEnemy extends Enemy {
 		// draw head
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
 				width / 2, direction + Math.PI / 4, 4);
-		ArrayList<Point> bottom = p.getCurrentShape();
+		ArrayList<drawing.Point> bottom = p.getCurrentShape();
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
 				direction + Math.PI / 4, 4);
-		ArrayList<Point> top = p.getCurrentShape();
+		ArrayList<drawing.Point> top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
 
 		// drawBody
+		p.startNewConvexPolygon(6);
 		p.drawNgon(x + width / 2, y + height / 2, z, width / 2 * 0.85,
 				direction + Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
@@ -39,11 +41,13 @@ public class BasicEnemy extends Enemy {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
 
 		if (attackTime >= 0) {
 			double attackPerc = 1 - (attackTime / (double) maxAttackTime);
 
 			// draw arm1
+			p.startNewConvexPolygon(6);
 			p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 					* (width / 2) + Math.cos(direction) * attackPerc
 					* attackRange,
@@ -62,8 +66,10 @@ public class BasicEnemy extends Enemy {
 			p.fillForm(p.createForm(top, bottom));
 			p.fillShape(top);
 			p.fillShape(bottom);
+			p.finishConvexPolygon();
 
 			// draw arm2
+			p.startNewConvexPolygon(6);
 			p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 					* (width / 2) + Math.cos(direction) * attackPerc
 					* attackRange,
@@ -82,6 +88,7 @@ public class BasicEnemy extends Enemy {
 			p.fillForm(p.createForm(top, bottom));
 			p.fillShape(top);
 			p.fillShape(bottom);
+			p.finishConvexPolygon();
 		}
 	}
 }

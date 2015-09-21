@@ -1,4 +1,5 @@
 import java.awt.Color;
+import drawing.*;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
@@ -30,15 +31,10 @@ public class EmptySpace extends NonSolidSpace {
 		super.drawSlant(p);
 	}
 
-	public static final Color defaultColor = new Color(238, 238, 238);
+	public static final Color defaultColor = new Color(230, 240, 230);
 
 	public Color getColor() {
 		return defaultColor;
-	}
-
-	public void drawSlantNoOverlap(Perspective p) {
-		p.setColor(getColor());
-		super.drawSlantNoOverlap(p);
 	}
 
 	public Space createCopy(int x, int y, int z) {

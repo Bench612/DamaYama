@@ -10,7 +10,7 @@ class Teleport extends EmptySpace {
 		return false;
 	}
 
-	public static final Color teleportColor = new Color(200, 238, 200);
+	public static final Color teleportColor = TeleportReceiver.teleportReceiverColor.darker();
 
 	public String getDescription() {
 		return "A teleporter.";

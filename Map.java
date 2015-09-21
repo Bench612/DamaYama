@@ -1,4 +1,5 @@
 import java.util.*;
+import drawing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -54,8 +55,9 @@ public class Map {
 			}
 			PlayPanel.currentRunning.effects.add(new BoxEffect(original.x,
 					original.y, original.z, Teleport.teleportColor));
-			PlayPanel.currentRunning.effects.add(new BoxEffect(object.x,
-					object.y, object.z, TeleportReceiver.teleportReceiverColor));
+			PlayPanel.currentRunning.effects
+					.add(new BoxEffect(object.x, object.y, object.z,
+							TeleportReceiver.teleportReceiverColor));
 			return true;
 		}
 		return false;
@@ -72,7 +74,9 @@ public class Map {
 				if (index == startIndex)
 					return false;
 			}
-			PlayPanel.currentRunning.effects.add(new BoxEffect(spawns.get(index).x,spawns.get(index).y,spawns.get(index).z,Spawn.spawnColor));
+			PlayPanel.currentRunning.effects.add(new BoxEffect(spawns
+					.get(index).x, spawns.get(index).y, spawns.get(index).z,
+					Spawn.spawnColor));
 			return true;
 		}
 		return false;
@@ -234,11 +238,10 @@ public class Map {
 		throw new IOException(c + " is not a valid character for a map");
 	}
 
-	public static void setNewMap(Map map) {
+	public static void setNewMap(DamaYama frame, Map map) {
 		current = map;
-		DamaYama.frame.setContentPane(new MapEditorPanel(
-				MapEditorPanel.allItems, MapEditorPanel.allTypes, true));
-		DamaYama.repaintStatic();
+		frame.switchTo(new MapEditorPanel(MapEditorPanel.allItems,
+				MapEditorPanel.allTypes, true));
 	}
 
 	public static void setNewMapKeep(Map map) {
@@ -251,15 +254,6 @@ public class Map {
 			for (int b = 0; b < spaces[0].length; b++)
 				g.drawRect(xOff + i * Space.SIZE, yOff + b * Space.SIZE,
 						Space.SIZE, Space.SIZE);
-	}
-
-	public void drawSlantGrid(Perspective p) {
-		p.g.setColor(Color.black);
-		for (int i = 0; i < spaces.length; i++)
-			for (int b = 0; b < spaces[i].length; b++) {
-				drawSquare(p, i, b, 0, 1);
-				p.drawShape(p.getCurrentShape());
-			}
 	}
 
 	public static void drawSquare(Perspective p, double x, double y, double z,
@@ -357,7 +351,6 @@ public class Map {
 		spaces = stretch;
 	}
 }
-
 
 class MapEditorPanel extends DamaPanel implements ActionListener,
 		MouseWheelListener {
@@ -466,10 +459,10 @@ class MapEditorPanel extends DamaPanel implements ActionListener,
 }
 
 class MapNewFrame extends JFrame {
-	public MapNewFrame() {
+	public MapNewFrame(DamaYama frame) {
 		super("Create a Map");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setContentPane(new MapNewPanel(this));
+		setContentPane(new MapNewPanel(this, frame));
 		this.setBounds(0, 0, 300, 120);
 		setVisible(true);
 	}
@@ -478,11 +471,13 @@ class MapNewFrame extends JFrame {
 class MapNewPanel extends DamaPanel implements ActionListener {
 	JTextField width;
 	JTextField height;
-	JFrame container;
+	MapNewFrame container;
+	DamaYama damaFrame;
 
-	public MapNewPanel(JFrame cont) {
+	public MapNewPanel(MapNewFrame cont, DamaYama damaFrame) {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		container = cont;
+		this.damaFrame = damaFrame;
 
 		JPanel widthPanel = new JPanel(new BorderLayout());
 		widthPanel.add(new JLabel("Width : "), BorderLayout.WEST);
@@ -513,7 +508,7 @@ class MapNewPanel extends DamaPanel implements ActionListener {
 				for (int i = 0; i < w; i++)
 					for (int b = 0; b < h; b++)
 						mapSpace[i][b] = Map.getDefaultSpace(i, b);
-				Map.setNewMap(new Map(mapSpace));
+				Map.setNewMap(damaFrame, new Map(mapSpace));
 				MapOpenPanel.fileName = MapOpenPanel.defaultFileName;
 				container.dispose();
 				return;

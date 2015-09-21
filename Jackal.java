@@ -1,10 +1,11 @@
 import java.awt.Color;
+import drawing.*;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
 class Jackal extends ShootingEnemy {
 	public Jackal() {
-		super(30, 40, 1);
+		super(30, 40, 1, DamaYama.blue);
 		double random = DamaYama.random();
 		if (random > 0.4)
 			weapon = new BasicWeapon(this);
@@ -42,7 +43,7 @@ class Jackal extends ShootingEnemy {
 		if (this.isFacing(other))
 			return super.getSheild(other);
 		else
-			return 1.5;
+			return 2;
 	}
 
 	public int getPointCount() {
@@ -57,10 +58,12 @@ class Jackal extends ShootingEnemy {
 				(int) Math.toDegrees(this.direction) + 90, 180);
 	}
 
+	static Color shieldColor = new Color(40, 120, 170, 170);
 	public void drawSlant(Perspective p) {
 		super.drawSlant(p);
 
 		// draw head
+		p.startNewConvexPolygon(5);
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.8,
 				width / 2, direction, 3);
 		ArrayList<Point> bottom = p.getCurrentShape();
@@ -70,8 +73,10 @@ class Jackal extends ShootingEnemy {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
 
 		// drawBody
+		p.startNewConvexPolygon(10);
 		p.drawNgon(x + width / 2, y + height / 2, z, width / 4 * 0.75,
 				direction + Math.PI / 4, 8);
 		bottom = p.getCurrentShape();
@@ -81,6 +86,7 @@ class Jackal extends ShootingEnemy {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
 
 		double attackPerc = 0;
 		if (attackTime >= 0) {
@@ -88,6 +94,7 @@ class Jackal extends ShootingEnemy {
 		}
 
 		// draw arm1
+		p.startNewConvexPolygon(6);
 		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction + Math.PI / 2)
@@ -105,8 +112,10 @@ class Jackal extends ShootingEnemy {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
 
 		// draw arm2
+		p.startNewConvexPolygon(6);
 		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction - Math.PI / 2)
@@ -124,9 +133,11 @@ class Jackal extends ShootingEnemy {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
+		p.finishConvexPolygon();
 
-		p.setColor(color.darker());
-		p.setOutline(Color.black);
+		//draw shield
+		p.setColor(shieldColor);
+		p.setOutline(color.darker());
 		p.startNewShape(x + width / 2 + Math.cos(direction + Math.PI / 4)
 				* (width / 2 + 0.01),
 				y + height / 2 - Math.sin(direction + Math.PI / 4)

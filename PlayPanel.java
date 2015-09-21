@@ -20,6 +20,7 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 	int[] directionX;
 	int[] directionY;
 	boolean started = false;
+	DamaYama frame;
 
 	public Player getPlayer() {
 		if (players == null)
@@ -42,8 +43,9 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 		o.leaveAll();
 	}
 
-	public PlayPanel() {
+	public PlayPanel(DamaYama fram) {
 		super(false, MapPanel.topDown);
+		frame = fram;
 		this.setLayout(null);
 		gameObjects = new ArrayList<MovingGameObject>();
 		items = new ArrayList<Item>();
@@ -51,6 +53,7 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 		drawType = slant;
 		addFocusListener(this);
 		addKeyListener(this);
+
 	}
 
 	public boolean running = false;
@@ -61,7 +64,7 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 	public void tryClose() {
 		running = false;
 		stillPlaying = false;
-		DamaYama.frame.reset();
+		frame.reset();
 	}
 
 	public void run() {
@@ -191,9 +194,17 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 		Map.getCurrent().compile();
 		MiniPanel mini = new MiniPanel(this, innerPanel);
 		add(mini);
-		mini.setBounds(DamaYama.frame.getWidth()
-				- mini.getPreferredSize().width, 0,
+		mini.setBounds(frame.getWidth() - mini.getPreferredSize().width, 0,
 				mini.getPreferredSize().width, mini.getPreferredSize().height);
+
+		FileWriter clear;
+		try {
+			clear = new FileWriter(chatFile);
+			clear.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		this.validate();
 	}
 
@@ -509,48 +520,4 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 	}
 }
 
-class StatPanel extends JPanel {
-	PlayPanel play;
-
-	public int getAccuracy() {
-		try {
-			return (int) Math.round((double) play.getPlayer().hits
-					/ (play.getPlayer().misses + play.getPlayer().hits) * 100);
-		} catch (Exception e) {
-			return 0;
-		}
-	}
-
-	public int getHealth() {
-		try {
-			return (int) Math
-					.round((double) play.getPlayer().getHealth() * 100);
-		} catch (Exception e) {
-			return 100;
-		}
-	}
-
-	public double getDMG() {
-		try {
-			return -Math.round(play.getPlayer().totalDamage * 100);
-		} catch (Exception e) {
-			return 0;
-		}
-	}
-
-	public StatPanel(PlayPanel p) {
-		play = p;
-	}
-
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g.setColor(Color.black);
-		g.drawString("Accuracy :" + getAccuracy() + "%", 0, g.getFontMetrics()
-				.getHeight());
-		g.drawString("Health :" + getHealth() + "%", 0, (int) (g
-				.getFontMetrics().getHeight() * 2.5));
-		g.drawString("Damage :" + getDMG(), 0,
-				g.getFontMetrics().getHeight() * 4);
-	}
-}
 

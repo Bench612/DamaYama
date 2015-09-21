@@ -69,7 +69,9 @@ class MultiPlayerPanel extends BoxHeadPanel {
 
 	String toWriteTo = "";// writes on a file after its done hosting
 
-	public MultiPlayerPanel(int players, String file, String fileToWriteOn) {
+	public MultiPlayerPanel(DamaYama frame, int players, String file,
+			String fileToWriteOn) {
+		super(frame);
 		host = true;
 		fileName = file;
 		toWriteTo = fileToWriteOn;
@@ -82,7 +84,8 @@ class MultiPlayerPanel extends BoxHeadPanel {
 	public void focusLost(FocusEvent e) {
 	}
 
-	public MultiPlayerPanel(String file) {
+	public MultiPlayerPanel(DamaYama frame, String file) {
+		super(frame);
 		host = false;
 		fileName = file;
 	}

@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import drawing.*;
 
 class Enemy extends MovingGameObjectWeapon {
 
@@ -12,7 +13,7 @@ class Enemy extends MovingGameObjectWeapon {
 	final static int maxAttackTime = 25;
 
 	protected Enemy(double sheildMulti, int speed, double size, Color c) {
-		super(Math.max(speed - BoxHeadPanel.wave, 2), 0.75 * size, 0.75 * size,
+		super(Math.max(speed - BoxHeadPanel.wave, 1), 0.75 * size, 0.75 * size,
 				sheildMulti);
 		color = c;
 		attackRange *= size;

@@ -1,4 +1,8 @@
 import java.awt.*;
+
+import drawing.*;
+import drawing.Point;
+
 import java.util.ArrayList;
 
 public class Space {
@@ -29,35 +33,33 @@ public class Space {
 	ArrayList<Point> base;
 	ArrayList<Shape> mainForm;
 
+	static final Color wallColor = new Color(150, 155, 150);
+
 	public void drawSlant(Perspective p) {
 		Map.drawSquare(p, x, y, z + height, 1);
-		p.setOutline(Color.DARK_GRAY);
-		ceil = p.getCurrentShape();
-		p.fillShape(ceil);
+		p.setOutline(wallColor.darker());
 		if (maxHeight() != 0) {
-			p.setColor(Color.LIGHT_GRAY);
+			p.startNewConvexPolygon(5);
+			ceil = p.getCurrentShape();
+			p.fillShape(ceil);
+			p.setColor(wallColor);
 			Map.drawSquare(p, x, y, 0, 1);
 			base = p.getCurrentShape();
 			// p.drawShape(base);
-			mainForm = p.createForm(ceil, base);
-			p.setOutline(Color.DARK_GRAY);
-			p.fillForm(mainForm);
+			p.fillForm(p.createForm(ceil, base));
+			p.finishConvexPolygon();
+		} else {
+			ceil = p.getCurrentShape();
+			p.fillShape(ceil);
 		}
-	}
-
-	public void drawSlantOverlap(Perspective p) {
 	}
 
 	public void draw(Graphics g, int x, int y) {
 		// g.setColor(Color.black);
+		// g.drawString(this.x + " " + this.y, x, y + Space.SIZE);
 		// g.drawString(objects.size() + " ", x, y + Space.SIZE);
-		//g.setColor(Color.black);
+		// g.setColor(Color.black);
 		// g.drawString(steps + " ", x, y + g.getFontMetrics().getHeight());
-	}
-
-	public void drawSlantNoOverlap(Perspective p) {
-		p.setShape(ceil);
-		p.fillShape(p.getCurrentShape());
 	}
 
 	public void drawOffset(Graphics g, int xO, int yO) {
@@ -77,8 +79,8 @@ public class Space {
 	public Space createCopy(int x, int y, int z) {
 		return new Space(x, y, z);
 	}
-	
-	public String getDescription(){
+
+	public String getDescription() {
 		return "A space of unknown ability.";
 	}
 
@@ -99,7 +101,8 @@ public class Space {
 	public void performAction(MovingGameObject object) {
 	}
 
-	public boolean canEnter(MovingGameObject movingGameObject, boolean ignoreHeight) {
+	public boolean canEnter(MovingGameObject movingGameObject,
+			boolean ignoreHeight) {
 		return movingGameObject.z >= maxHeight() || ignoreHeight;
 	}
 

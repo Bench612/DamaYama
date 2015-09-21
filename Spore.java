@@ -1,4 +1,5 @@
 
+import drawing.*;
 class Spore extends Enemy {
 	int spawnX, spawnY;
 

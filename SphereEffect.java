@@ -1,4 +1,5 @@
 import java.awt.Color;
+import drawing.*;
 import java.awt.Graphics;
 
 class SphereEffect extends Effect{

@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import drawing.*;
 public class Item {
 	double x, y, z, width, height;
 	Color color;

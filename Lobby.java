@@ -10,9 +10,11 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 	String fileName = "Lobby.lob";
 	String[] files;
 	JComboBox comboBox;
+	DamaYama parent;
 
-	public Lobby() {
+	public Lobby(DamaYama parent) {
 		super(new BorderLayout());
+		this.parent = parent;
 		this.setBackground(Color.black);
 		if (!new File(chatFileName).exists()) {
 			try {
@@ -53,7 +55,6 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 		new Thread(this).start();
 	}
 
-
 	boolean hosting = false;
 	boolean started = false;
 
@@ -73,7 +74,7 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 				System.out.println("hosting");
 			}
 		} else {
-			DamaYama.resetStatic();
+			parent.reset();
 		}
 	}
 
@@ -101,7 +102,7 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 				}
 				try {
 					writer.write("start" + "\n");
-					writer.write(DamaYama.frame.username + "\n");
+					writer.write(parent.username + "\n");
 					writer.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -141,7 +142,7 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 								}
 							}
 							try {
-								writer.write(DamaYama.frame.username + "\n");
+								writer.write(parent.username + "\n");
 								writer.close();
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -151,10 +152,11 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 						scanner.close();
 						if (firstLine.length() > 1) {
 							if (started)
-								DamaYama.switchTo(new MultiPlayerPanel(
+								parent.switchTo(new MultiPlayerPanel(parent,
 										firstLine));
 							else
-								DamaYama.switchTo(new ReplayPanel(firstLine));
+								parent.switchTo(new ReplayPanel(parent,
+										firstLine));
 							quit = true;
 							running = false;
 							return;
@@ -182,7 +184,7 @@ public class Lobby extends DamaPanel implements ActionListener, Runnable {
 				}
 				if (players > 0) {
 					System.out.println("players " + players);
-					DamaYama.switchTo(new MultiPlayerPanel(players,
+					parent.switchTo(new MultiPlayerPanel(parent, players,
 							actualGameName, fileName));
 					FileWriter writer;
 					try {
@@ -214,9 +216,7 @@ class MapShowPanel extends MapPanel {
 		super(false, slant);
 		setBackground(Color.black);
 		try {
-			Map
-					.setNewMapKeep(new Map(new Scanner(new File(
-							lobby.files[0]))));
+			Map.setNewMapKeep(new Map(new Scanner(new File(lobby.files[0]))));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -1,5 +1,6 @@
+package drawing;
 
-class Point {
+public class Point {
 	double x;
 	double y;
 
@@ -7,7 +8,7 @@ class Point {
 	double gameY;
 	double gameZ;
 
-	public Point(double x1, double y1, double gX, double gY, double gZ) {
+	Point(double x1, double y1, double gX, double gY, double gZ) {
 		x = x1;
 		y = y1;
 
@@ -16,7 +17,7 @@ class Point {
 		gameZ = gZ;
 	}
 
-	public void reEvalutate(Perspective p) {
+	void reEvalutate(Perspective p) {
 		Point p1 = p.getScreenPointNoTranslate(gameX, gameY, gameZ);
 		x = p1.x;
 		y = p1.y;

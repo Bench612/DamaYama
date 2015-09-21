@@ -14,12 +14,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 class MapOpenFrame extends JFrame {
-	public MapOpenFrame() {
+	public MapOpenFrame(DamaYama damaFrame) {
 		super("Select a Map");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		try {
 			setContentPane(new MapOpenPanel(new Scanner(new File(
-					Map.mapFileName)), this));
+					Map.mapFileName)), this, damaFrame));
 		} catch (FileNotFoundException e) {
 			System.out
 					.println("Could not load map properly...\nAttempting to write new file");
@@ -31,7 +31,7 @@ class MapOpenFrame extends JFrame {
 			}
 			try {
 				setContentPane(new MapOpenPanel(new Scanner(new File(
-						Map.mapFileName)), this));
+						Map.mapFileName)), this, damaFrame));
 			} catch (FileNotFoundException e1) {
 				System.out.println("Could not write file");
 				e1.printStackTrace();
@@ -46,11 +46,13 @@ class MapOpenPanel extends DamaPanel implements ActionListener {
 	JComboBox maps;
 	JButton openMap;
 	Window container;
+	DamaYama damaFrame;
 	public static String fileName = "MyMap.txt";
 	public static final String defaultFileName = "MyMap.txt";
 
-	public MapOpenPanel(Scanner scanner, JFrame jf) {
+	public MapOpenPanel(Scanner scanner, JFrame jf, DamaYama dF) {
 		super(new FlowLayout());
+		damaFrame = dF;
 		container = jf;
 		try {
 			maps = new JComboBox(Map.getMapNames(scanner));
@@ -82,7 +84,7 @@ class MapOpenPanel extends DamaPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Map newMap = openMap(maps.getSelectedItem().toString());
 		if (newMap != null) {
-			Map.setNewMap(newMap);
+			Map.setNewMap(damaFrame, newMap);
 			fileName = maps.getSelectedItem() + "";
 			container.dispose();
 		} else {

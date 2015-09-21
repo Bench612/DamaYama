@@ -1,12 +1,13 @@
+package drawing;
+
 import java.awt.Color;
 import java.util.ArrayList;
 
-
-class Shape implements Comparable<Shape> {
+class Shape extends Drawable {
 	ArrayList<Point> points;
 
-	public Shape() {
-		points = new ArrayList<Point>();
+	public Shape(int size) {
+		points = new ArrayList<Point>(size);
 	}
 
 	public Shape(ArrayList<Point> ps) {
@@ -39,36 +40,36 @@ class Shape implements Comparable<Shape> {
 		return false;
 	}
 
-	double compareX, compareY, compareZ;
-
-	public void update(Perspective p) {
-		compareY = points.get(0).gameY;
-		compareZ = points.get(0).gameZ;
-		compareX = Math.abs(p.vanishingX - points.get(0).x);
+	void updateCompareValues(Perspective p) {
+		minY = points.get(0).gameY;
+		maxY = minY;
+		
+		minZ = points.get(0).gameZ;
+		maxZ = minZ;
+		
+		minX = Math.abs(p.vanishingX - points.get(0).x);
+		maxX = minX;
 		for (int i = 1; i < points.size(); i++) {
-			compareX = Math.max(compareX, Math.abs(p.vanishingX - points.get(i).x));
-			compareY = Math.min(compareY,points.get(i).gameY);
-			compareZ += points.get(i).gameZ;
+			double x = Math.abs(p.vanishingX - points.get(i).x);
+			minX = Math.min(x, minX);
+			maxX = Math.max(x, maxX);
+			double y = points.get(i).gameY;
+			minY = Math.min(y, minY);
+			maxY = Math.max(y, maxY);
+			double z = points.get(i).gameZ;
+			minZ = Math.min(z, minZ);
+			maxZ = Math.max(z, maxZ);
 		}
-		compareZ /= points.size();
 	}
-	
 
-	public int compareTo(Shape other) {
-		if (compareY > other.compareY)
-			return 1;
-		if (compareY != other.compareY)
-			return -1;
-		if (compareZ > other.compareZ)
-			return 1;
-		if (compareZ != other.compareZ)
-			return -1;
-		if (compareX < other.compareX)
-			return 1;
-		if (compareX != other.compareX)
-			return -1;
-		if (!fill && other.fill)
-			return 1;
-		return 0; // because they are equal
+	@Override
+	void draw(Perspective p) {
+		if (fill) {
+			p.setColor(color);
+			p.fillShapeAbsolute(points);
+		}
+		p.setColor(outline);
+		p.drawShapeAbsolute(points);
 	}
+
 }
