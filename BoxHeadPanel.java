@@ -59,7 +59,6 @@ class BoxHeadPanel extends PlayPanel {
 			if (gameObjects.size() == players.size() && toSpawn.isEmpty())
 				startNewWave();
 		} else if (timeSinceLastSpawn > 100 / (spawnCoeffecient * (wave + 1))) {
-			System.out.println("adding");
 			double random = DamaYama.random();
 			if (random > .4)
 				introduceGameObject(new BasicEnemy());

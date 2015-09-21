@@ -64,6 +64,7 @@ class Demon extends ShootingEnemy {
 
 		// draw arm1
 		p.setColor(Color.black);
+		p.setOutline(Color.black);
 		p.startNewConvexPolygon(6);
 		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
