@@ -134,7 +134,7 @@ public class MovingGameObject {
 		y = y1;
 		updateXSquares();
 		updateYSquares();
-		if (canEnterAll(x, y, false)) {
+		if (canEnterAll(x, y, true)) {
 			enterAll(x, y);
 			return true;
 		}

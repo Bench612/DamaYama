@@ -32,12 +32,11 @@ class BoxHeadPanel extends PlayPanel {
 		for (int i = 0; i < players.size(); i++)
 			addGameObject(players.get(i));
 		wave = -1;
+		timeSinceLastSpawn = Integer.MAX_VALUE;
 		startNewWave();
-		for (int i = 0; i < 1; i++)
-			addGameObject(new BasicEnemy());
 	}
 
-	int spawnsThisWave = 0;
+	private int spawnsThisWave = 0;
 
 	private void startNewWave() {
 		wave++;
@@ -49,26 +48,27 @@ class BoxHeadPanel extends PlayPanel {
 		return 10 * Math.pow(2, wave);
 	}
 
-	protected void addGameObject(MovingGameObject object) {
-		super.addGameObject(object);
+	private void introduceGameObject(MovingGameObject object) {
+		addGameObject(object);
 		spawnsThisWave += object.getPointCount();
 	}
 
 	public void updateSpawns() {
 		super.updateSpawns();
-		if (spawnsThisWave >= numberForWave() && toSpawn.isEmpty()) {
-			if (gameObjects.size() == players.size())
+		if (spawnsThisWave >= numberForWave()) {
+			if (gameObjects.size() == players.size() && toSpawn.isEmpty())
 				startNewWave();
 		} else if (timeSinceLastSpawn > 100 / (spawnCoeffecient * (wave + 1))) {
+			System.out.println("adding");
 			double random = DamaYama.random();
 			if (random > .4)
-				addGameObject(new BasicEnemy());
+				introduceGameObject(new BasicEnemy());
 			else if (random > .2)
-				addGameObject(new SporeParent());
+				introduceGameObject(new SporeParent());
 			else if (random > .11)
-				addGameObject(new Demon());
+				introduceGameObject(new Demon());
 			else
-				addGameObject(new Jackal());
+				introduceGameObject(new Jackal());
 			timeSinceLastSpawn = 0;
 		} else
 			timeSinceLastSpawn++;
