@@ -122,7 +122,7 @@ class Ammo extends Item {
 		super.pickup(p);
 		Weapon origWeapon = p.getWeapon(weapon.getClass());
 		if (origWeapon == null)
-			p.weapons.add(weapon);
+			p.addNewWeapon(weapon);
 		else
 			origWeapon.ammo += weapon.ammo;
 	}

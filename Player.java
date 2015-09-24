@@ -197,7 +197,9 @@ public class Player extends MovingGameObjectWeapon {
 				if (currentIndex >= weapons.size())
 					currentIndex = 0;
 				weapon = weapons.get(currentIndex);
-				PlayPanel.currentRunning.displayMessage(weapon + " Selected");
+				if (this == PlayPanel.currentRunning.getPlayer())
+					PlayPanel.currentRunning.displayMessage(weapon
+							+ " Selected");
 			}
 		}
 		if (keys[PlayPanel.ONE])
@@ -256,16 +258,28 @@ public class Player extends MovingGameObjectWeapon {
 			p.startNewShape(x + width / 2, y + height / 2, z + getHeight() / 2,
 					2);
 			p.addPoint(p.getScreenPoint(
-					x + width / 2
-							+ (Math.cos(angle - (weapon.accuracy + weapon.spread) / 2) * 3),
-					y + width / 2
-							+ (Math.sin(angle - (weapon.accuracy + weapon.spread) / 2) * 3),
+					x
+							+ width
+							/ 2
+							+ (Math.cos(angle
+									- (weapon.accuracy + weapon.spread) / 2) * 3),
+					y
+							+ width
+							/ 2
+							+ (Math.sin(angle
+									- (weapon.accuracy + weapon.spread) / 2) * 3),
 					z + getHeight() / 2));
 			p.addPoint(p.getScreenPoint(
-					x + width / 2
-							+ (Math.cos(angle + (weapon.accuracy + weapon.spread) / 2) * 3),
-					y + width / 2
-							+ (Math.sin(angle + (weapon.accuracy + weapon.spread) / 2) * 3),
+					x
+							+ width
+							/ 2
+							+ (Math.cos(angle
+									+ (weapon.accuracy + weapon.spread) / 2) * 3),
+					y
+							+ width
+							/ 2
+							+ (Math.sin(angle
+									+ (weapon.accuracy + weapon.spread) / 2) * 3),
 					z + getHeight() / 2));
 			p.fillShape(p.getCurrentShape());
 

@@ -45,7 +45,6 @@ class Demon extends ShootingEnemy {
 		p.finishConvexPolygon();
 
 		// draw head
-		p.startNewConvexPolygon(7);
 		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
 				width / 2, direction + Math.PI / 5, 5);
 		bottom = p.getCurrentShape();
@@ -55,7 +54,6 @@ class Demon extends ShootingEnemy {
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
-		p.finishConvexPolygon();
 
 		double attackPerc = 0;
 		if (attackTime >= 0) {
