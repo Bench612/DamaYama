@@ -70,14 +70,15 @@ public class Perspective {
 		scaleY = 1;
 	}
 
+	static final double scaleConstant = 50; 
 	public void update(Graphics g1, double x, double y, double z, double s,
 			int maxScreenWidth, int maxScreenHeight) {
 		g = g1;
 		translateX = x;
 		translateY = y;
 		translateZ = z;
-		scale = Perspective.absoluteCoefficientOfVanishing * 50 * s;
-		scaleY = 50 * s;
+		scale = Perspective.absoluteCoefficientOfVanishing * scaleConstant * s;
+		scaleY = scaleConstant * s;
 		drawables.clear();
 		maxWidth = maxScreenWidth;
 		maxHeight = maxScreenHeight;
@@ -213,7 +214,7 @@ public class Perspective {
 				lastPoint().gameY, lastPoint().gameZ + length));
 	}
 
-	public void drawNgon(double x, double y, double z, double radius,
+	public void createNgon(double x, double y, double z, double radius,
 			double angle, int n) {
 		startNewShape(x + (radius * Math.cos(angle)),
 				y - (radius * Math.sin(angle)), z, n);
@@ -224,32 +225,47 @@ public class Perspective {
 		}
 	}
 
-	public void drawDome(double x, double y, double z, double radius,
+	public void fillDome(double x, double y, double z, double radius,
 			double angle, int sides, int levels) {
-		drawNgon(x, y, z, radius, angle, sides);
+		createNgon(x, y, z, radius, angle, sides);
 		ArrayList<Point> bottom = getCurrentShape();
 		for (int i = 1; i <= levels; i++) {
 			double heightAboveZ = (radius * i) / levels;
 			double innerRadius = Math.sqrt((radius * radius)
 					- (heightAboveZ * heightAboveZ));
-			drawNgon(x, y, z + heightAboveZ, innerRadius, angle, sides);
+			createNgon(x, y, z + heightAboveZ, innerRadius, angle, sides);
 			ArrayList<Point> top = getCurrentShape();
 			fillForm(createForm(top, bottom));
 			bottom = top;
 		}
 	}
 
-	public void drawSphere(double x, double y, double z, double radius,
+	public void fillSphere(double x, double y, double z, double radius,
 			double angle, int sides, int levels) {
-		drawNgon(x, y, z - radius, 0, angle, sides);
+		createNgon(x, y, z - radius, 0, angle, sides);
 		ArrayList<Point> bottom = getCurrentShape();
 		for (int i = -levels + 1; i <= levels; i++) {
 			double heightAboveZ = (radius * i) / levels;
 			double innerRadius = Math.sqrt((radius * radius)
 					- (heightAboveZ * heightAboveZ));
-			drawNgon(x, y, z + heightAboveZ, innerRadius, angle, sides);
+			createNgon(x, y, z + heightAboveZ, innerRadius, angle, sides);
 			ArrayList<Point> top = getCurrentShape();
 			fillForm(createForm(top, bottom));
+			bottom = top;
+		}
+	}
+	
+	public void drawSphere(double x, double y, double z, double radius,
+			double angle, int sides, int levels) {
+		createNgon(x, y, z - radius, 0, angle, sides);
+		ArrayList<Point> bottom = getCurrentShape();
+		for (int i = -levels + 1; i <= levels; i++) {
+			double heightAboveZ = (radius * i) / levels;
+			double innerRadius = Math.sqrt((radius * radius)
+					- (heightAboveZ * heightAboveZ));
+			createNgon(x, y, z + heightAboveZ, innerRadius, angle, sides);
+			ArrayList<Point> top = getCurrentShape();
+			drawForm(createForm(top, bottom));
 			bottom = top;
 		}
 	}

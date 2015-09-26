@@ -1,11 +1,17 @@
 import java.awt.event.KeyEvent;
+import java.io.FileWriter;
+import java.io.IOException;
 
 class ReplayPanel extends MultiPlayerPanel {
 	public ReplayPanel(DamaYama frame, String file) {
 		super(frame, file);
 	}
 
-	public boolean write(byte[] bytes) {
+	public boolean write(boolean[] keys) {
+		return true;
+	}
+
+	public boolean write(boolean[] keys, int a, int b) {
 		return true;
 	}
 
@@ -22,11 +28,13 @@ class ReplayPanel extends MultiPlayerPanel {
 			if (playerIndex < 0)
 				playerIndex = players.size() - 1;
 		} else if (e.getKeyCode() == KeyEvent.VK_W
-				|| e.getKeyCode() == KeyEvent.VK_UP) {
+				|| e.getKeyCode() == KeyEvent.VK_UP
+				|| e.getKeyCode() == KeyEvent.VK_PLUS) {
 			mainSleepSpeed /= 2;
-			mainSleepSpeed = Math.max(mainSleepSpeed, 5);
+			mainSleepSpeed = Math.max(mainSleepSpeed, 1);
 		} else if (e.getKeyCode() == KeyEvent.VK_S
-				|| e.getKeyCode() == KeyEvent.VK_DOWN) {
+				|| e.getKeyCode() == KeyEvent.VK_DOWN
+				|| e.getKeyCode() == KeyEvent.VK_MINUS) {
 			mainSleepSpeed *= 2;
 			mainSleepSpeed = Math.min(mainSleepSpeed, 80);
 		}

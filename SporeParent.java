@@ -23,10 +23,10 @@ class SporeParent extends Enemy {
 	public void drawSlant(Perspective p) {
 		super.drawSlant(p);
 
-		p.drawNgon(x + width / 2, y + height / 2, z, width / 2.5, direction
+		p.createNgon(x + width / 2, y + height / 2, z, width / 2.5, direction
 				+ Math.PI / 4, 4);
 		ArrayList<Point> bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.5,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.5,
 				width / 2 * 0.25, direction + Math.PI / 4, 4);
 		ArrayList<Point> top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
@@ -34,22 +34,22 @@ class SporeParent extends Enemy {
 		p.fillShape(bottom);
 
 		p.setColor(sphereColor);
-		p.drawSphere(x + width / 2, y + height / 2, z + getHeight() * 0.8,
+		p.fillSphere(x + width / 2, y + height / 2, z + getHeight() * 0.8,
 				width / 2, direction + Math.PI / 4, 8, 4);
 		
 
 		p.setColor(DamaYama.orange);
-		p.drawSphere(x + width / 2 - width / 3, y + height / 2 + height * 0.2, z + getHeight() * 0.8,
+		p.fillSphere(x + width / 2 + Math.cos(direction + 2.6) * width * 0.3387 , y + height / 2 + Math.sin(direction + 2.6) * height * 0.3387, z + getHeight() * 0.8,
 				width / 4, direction + Math.PI / 4, 8, 4);
-		p.drawSphere(x + width / 2 - width * 0.3, y + height / 2 - height * 0.22, z + getHeight() * 0.8,
+		p.fillSphere(x + width / 2 + Math.cos(direction - 2.6) * width * 0.387, y + height / 2 + Math.sin(direction - 2.6) * height * 0.387, z + getHeight() * 0.8,
 				width / 4, direction + Math.PI / 4, 8, 4);
-		p.drawSphere(x + width / 2 + width * 0.2, y + height / 2 + height * 0.2, z + getHeight() * 0.8 - height*0.2,
+		p.fillSphere(x + width / 2 + Math.cos(direction + Math.PI / 4) * width * 0.282, y + height / 2 + Math.sin(direction + Math.PI / 4) * height * 0.282, z + getHeight() * 0.8 - height*0.2,
 				width / 4, direction + Math.PI / 4, 8, 4);
-		p.drawSphere(x + width / 2 + width * 0.34, y + height / 2 - height * 0.2, z + getHeight() * 0.8 + height*0.3,
+		p.fillSphere(x + width / 2  + Math.cos(direction -0.52) * width * 0.394, y + height / 2 + Math.sin(direction -0.52) * height * 0.394, z + getHeight() * 0.8 + height*0.3,
 				width / 4, direction + Math.PI / 4, 8, 4);
 	}
 
-	double explosionDamage = 0.8;
+	double explosionDamage = 1.5;
 
 	public void die() {
 		explode(x, y, z, width, height, explosionRange, explosionDamage);

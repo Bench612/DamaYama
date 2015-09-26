@@ -1,6 +1,6 @@
 class SMG extends Weapon {
 	public SMG(MovingGameObjectWeapon p) {
-		super(p, 8, 0.25, 0.1, 0, 1, 200, 0.4);
+		super(p, 8, 0.25, 0.1, 0, 1, 800, 0.4);
 	}
 
 	public String toString() {

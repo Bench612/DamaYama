@@ -25,7 +25,7 @@ class SphereEffect extends Effect{
 	public void drawSlant(Perspective p){
 		p.setColor(color);
 		p.setOutline(clear);
-		p.drawSphere(x, y, z, radius, 0, 6, 4);
+		p.fillSphere(x, y, z, radius, 0, 6, 4);
 		super.drawSlant(p);
 	}
 	

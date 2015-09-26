@@ -3,6 +3,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import drawing.*;
+
 public class Item {
 	double x, y, z, width, height;
 	Color color;
@@ -16,16 +17,17 @@ public class Item {
 		y = drop.y + drop.height / 2 - height / 2;
 		PlayPanel.currentRunning.items.add(this);
 		inside = new ArrayList<Space>();
-		for (int i = 0; i < drop.squaresX.length; i++)
-			for (int b = 0; b < drop.squaresY.length; b++)
-				inside.add(Map.getCurrent().spaces[MovingGameObject
-						.getXIndex(drop.squaresX[i])][MovingGameObject
-						.getYIndex(drop.squaresY[i])]);
-		for (int i = 0; i < inside.size(); i++) {
-			if (!inside.get(i).items.contains(this)) {
-				inside.get(i).items.add(this);
-				z = Math.max(inside.get(i).maxHeight(), z);
+		for (int xS = 0; xS <= 1; xS++) {
+			for (int yS = 0; yS <= 1; yS++) {
+				Space square = Map.getCurrent().spaces[Map.convertToIndex(x
+						+ xS * width)][Map.convertToIndex(y + yS * height)];
+				if (!inside.contains(square))
+					inside.add(square);
 			}
+		}
+		for (int i = 0; i < inside.size(); i++) {
+			inside.get(i).items.add(this);
+			z = Math.max(inside.get(i).maxHeight(), z);
 		}
 	}
 
@@ -33,8 +35,8 @@ public class Item {
 		PlayPanel.currentRunning.items.remove(this);
 		for (int i = 0; i < inside.size(); i++)
 			inside.get(i).items.remove(this);
-		PlayPanel.currentRunning
-				.displayMessage(p + " picked up " + this, color.darker());
+		PlayPanel.currentRunning.displayMessage(p + " picked up " + this,
+				color.darker());
 	}
 
 	public void draw(Graphics g, int xOff, int yOff) {
@@ -71,8 +73,7 @@ class Upgrade extends Item {
 	public Upgrade(MovingGameObjectWeapon drop) {
 		super(drop, Color.blue);
 		w = drop.weapon;
-		message = getDescription() + " but no " + w.toString()
-				+ " to upgrade yet.";
+		message = "No " + w.toString() + " to upgrade yet.";
 	}
 
 	public void pickup(Player p) {
@@ -124,7 +125,8 @@ class Ammo extends Item {
 		if (origWeapon == null)
 			p.addNewWeapon(weapon);
 		else
-			origWeapon.ammo += weapon.ammo;
+			origWeapon.ammo = Math.min(origWeapon.ammo + weapon.ammo,
+					origWeapon.maxAmmo);
 	}
 
 	Weapon weapon;

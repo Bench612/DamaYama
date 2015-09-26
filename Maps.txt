@@ -2,3 +2,4 @@
 DefaultMap.txt
 Teleport.txt
 DefaultMapStretch.txt
+KingOfTheHill.txt

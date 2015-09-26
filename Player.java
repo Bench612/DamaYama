@@ -85,16 +85,20 @@ public class Player extends MovingGameObjectWeapon {
 					centerX,
 					centerY,
 					centerX
-							+ (int) (Math.cos(angle - weapon.accuracy / 2) * 50),
+							+ (int) (Math.cos(angle
+									- (weapon.accuracy + weapon.spread) / 2) * 50),
 					centerY
-							+ (int) (Math.sin(angle - weapon.accuracy / 2) * 50));
+							+ (int) (Math.sin(angle
+									- (weapon.accuracy + weapon.spread) / 2) * 50));
 			g.drawLine(
 					centerX,
 					centerY,
 					centerX
-							+ (int) (Math.cos(angle + weapon.accuracy / 2) * 50),
+							+ (int) (Math.cos(angle
+									+ (weapon.accuracy + weapon.spread) / 2) * 50),
 					centerY
-							+ (int) (Math.sin(angle + weapon.accuracy / 2) * 50));
+							+ (int) (Math.sin(angle
+									+ (weapon.accuracy + weapon.spread) / 2) * 50));
 			g.drawLine(centerX, centerY, centerX + getShootDirectionX(),
 					centerY + getShootDirectionY());
 		}
@@ -122,8 +126,8 @@ public class Player extends MovingGameObjectWeapon {
 
 	public void addNewWeapon(Weapon w) {
 		weapons.add(w);
-		PlayPanel.currentRunning
-				.displayMessage("New Weapon " + w + " Unlocked");
+		PlayPanel.currentRunning.displayMessage("New Weapon -" + w
+				+ "- Unlocked");
 	}
 
 	protected boolean moveDown(double amount) {
@@ -202,20 +206,33 @@ public class Player extends MovingGameObjectWeapon {
 							+ " Selected");
 			}
 		}
-		if (keys[PlayPanel.ONE])
+		if (keys[PlayPanel.ONE]) {
 			trySwitchTo(BasicWeapon.class);
-		else if (keys[PlayPanel.TWO])
-			trySwitchTo(SMG.class);
-		else if (keys[PlayPanel.THREE])
-			trySwitchTo(Sniper.class);
-		else if (keys[PlayPanel.FOUR])
-			trySwitchTo(Shotgun.class);
-		else if (keys[PlayPanel.FIVE])
-			trySwitchTo(MachineGun.class);
+		} else if (keys[PlayPanel.TWO]) {
+			if (!trySwitchTo(SMG.class) && !previousKeys[PlayPanel.TWO]
+					&& PlayPanel.currentRunning.getPlayer() == this) {
+				PlayPanel.currentRunning.displayMessage("SMG not unlocked.");
+			}
+		} else if (keys[PlayPanel.THREE]) {
+			if (!trySwitchTo(MachineGun.class)
+					&& !previousKeys[PlayPanel.THREE]
+					&& PlayPanel.currentRunning.getPlayer() == this)
+				PlayPanel.currentRunning
+						.displayMessage("Machine Gun not unlocked.");
+		} else if (keys[PlayPanel.FOUR]) {
+			if (!trySwitchTo(Shotgun.class) && !previousKeys[PlayPanel.FOUR]
+					&& PlayPanel.currentRunning.getPlayer() == this)
+				PlayPanel.currentRunning
+						.displayMessage("Shotgun not unlocked.");
+		} else if (keys[PlayPanel.FIVE]) {
+			if (!trySwitchTo(Sniper.class) && !previousKeys[PlayPanel.FIVE]
+					&& PlayPanel.currentRunning.getPlayer() == this)
+				PlayPanel.currentRunning.displayMessage("Sniper not unlocked.");
+		}
 		for (int i = 0; i < squaresX.length; i++)
 			for (int b = 0; b < squaresY.length; b++) {
 				Space s = Map.getCurrent().spaces[getXIndex(squaresX[i])][getYIndex(squaresY[i])];
-				for (int z = 0; z < s.items.size(); z++) {
+				for (int z = s.items.size() - 1; z >= 0; z--) {
 					if (this.distanceTo(s.items.get(z).x, s.items.get(z).y) < width
 							/ 2 + s.items.get(z).width / 2)
 						s.items.get(z).pickup(this);
@@ -262,24 +279,24 @@ public class Player extends MovingGameObjectWeapon {
 							+ width
 							/ 2
 							+ (Math.cos(angle
-									- (weapon.accuracy + weapon.spread) / 2) * 3),
+									- (weapon.accuracy + weapon.spread) / 2) * 2.75),
 					y
 							+ width
 							/ 2
 							+ (Math.sin(angle
-									- (weapon.accuracy + weapon.spread) / 2) * 3),
+									- (weapon.accuracy + weapon.spread) / 2) * 2.75),
 					z + getHeight() / 2));
 			p.addPoint(p.getScreenPoint(
 					x
 							+ width
 							/ 2
 							+ (Math.cos(angle
-									+ (weapon.accuracy + weapon.spread) / 2) * 3),
+									+ (weapon.accuracy + weapon.spread) / 2) * 2.75),
 					y
 							+ width
 							/ 2
 							+ (Math.sin(angle
-									+ (weapon.accuracy + weapon.spread) / 2) * 3),
+									+ (weapon.accuracy + weapon.spread) / 2) * 2.75),
 					z + getHeight() / 2));
 			p.fillShape(p.getCurrentShape());
 
@@ -291,10 +308,10 @@ public class Player extends MovingGameObjectWeapon {
 		}
 
 		// draw head
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
 				width / 2, direction + Math.PI / 4, 4);
 		ArrayList<drawing.Point> bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
 				direction + Math.PI / 4, 4);
 		ArrayList<drawing.Point> top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
@@ -302,24 +319,22 @@ public class Player extends MovingGameObjectWeapon {
 		p.fillShape(bottom);
 
 		// drawBody
-		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2, y + height / 2, z, width / 2 * 0.75,
+		p.createNgon(x + width / 2, y + height / 2, z, width / 2 * 0.75,
 				direction + Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
 				width / 2 * 0.75, direction + Math.PI / 4, 4);
 		top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
-		p.finishConvexPolygon();
 
 		double attackPerc = 0;
 		double attackRange = width * 0.5;
 
 		// draw arm1
 		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction + Math.PI / 2)
 						* (height / 2) + Math.sin(direction) * attackPerc
@@ -327,7 +342,7 @@ public class Player extends MovingGameObjectWeapon {
 						* (1 - attackPerc) + getHeight() * 0.4 * attackPerc, 0,
 				direction + Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2),
 				y + height / 2 - Math.sin(direction + Math.PI / 2)
 						* (height / 2), z + getHeight() * 0.5, 0.1, direction
@@ -340,7 +355,7 @@ public class Player extends MovingGameObjectWeapon {
 
 		// draw arm2
 		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction - Math.PI / 2)
 						* (height / 2) + Math.sin(direction) * attackPerc
@@ -348,7 +363,7 @@ public class Player extends MovingGameObjectWeapon {
 						* (1 - attackPerc) + getHeight() * 0.4 * attackPerc, 0,
 				direction - Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 				* (width / 2),
 				y + height / 2 - Math.sin(direction - Math.PI / 2)
 						* (height / 2), z + getHeight() * 0.5, 0.1, direction
@@ -373,26 +388,32 @@ public class Player extends MovingGameObjectWeapon {
 		drawHealthBarSlant(p);
 	}
 
-	private void trySwitchTo(Class c) {
+	private boolean trySwitchTo(Class c) {
 		Weapon prev = weapon;
 		weapon = getWeapon(c);
-		if (weapon == null)
+		if (weapon == null) {
 			weapon = prev;
+			return false;
+		}
+		return true;
 	}
 }
 
 class Ghost extends Player {
 	public Ghost(PlayPanel container1, int index) {
 		super(container1, index);
+		alive = false;
 	}
 
-	protected boolean moveDown(double amount) {
-		y += amount;
-		return true;
-	}
+	public void update(boolean[] keys, boolean[] previousKeys) {
+		if (keys[PlayPanel.UP])
+			y -= speed;
+		else if (keys[PlayPanel.DOWN])
+			y += speed;
 
-	protected boolean moveRight(double amount) {
-		x += amount;
-		return true;
+		if (keys[PlayPanel.LEFT])
+			x -= speed;
+		else if (keys[PlayPanel.RIGHT])
+			x += speed;
 	}
 }

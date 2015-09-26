@@ -76,18 +76,19 @@ public class Weapon {
 			double value;
 			switch (i) {
 			case 0:
-				value = 1 - (accuracy / Math.PI);// wasted ammo
+				value = 1 - accuracy;// wasted ammo
+				break;
 			case 1:
-				value = (damage * bulletsPerShot / delay) / 0.08; // damage per
+				value = (damage * bulletsPerShot / delay) / 1; // damage per
 																	// time
 				// (ideal)
 				break;
 			case 2:
-				value = ammo * damage / 1200; // total damage
+				value = maxAmmo * damage / 800; // total damage
 				break;
 			default:
 				value = ((knockback * bulletsPerShot) / delay) / 0.05; // total
-																		// knockback
+																		// knockback per sec
 				break;
 			}
 			value = Math.min(Math.max(value, 0), 1);

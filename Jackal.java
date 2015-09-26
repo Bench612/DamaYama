@@ -64,10 +64,10 @@ class Jackal extends ShootingEnemy {
 
 		// draw head
 		p.startNewConvexPolygon(5);
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.8,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.8,
 				width / 2, direction, 3);
 		ArrayList<Point> bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
 				direction, 3);
 		ArrayList<Point> top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
@@ -77,10 +77,10 @@ class Jackal extends ShootingEnemy {
 
 		// drawBody
 		p.startNewConvexPolygon(10);
-		p.drawNgon(x + width / 2, y + height / 2, z, width / 4 * 0.75,
+		p.createNgon(x + width / 2, y + height / 2, z, width / 4 * 0.75,
 				direction + Math.PI / 4, 8);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
 				width / 4 * 0.75, direction + Math.PI / 4, 8);
 		top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
@@ -95,7 +95,7 @@ class Jackal extends ShootingEnemy {
 
 		// draw arm1
 		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction + Math.PI / 2)
 						* (height / 2) + Math.sin(direction) * attackPerc
@@ -103,7 +103,7 @@ class Jackal extends ShootingEnemy {
 						* (1 - attackPerc) + getHeight() * 0.4 * attackPerc, 0,
 				direction + Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2),
 				y + height / 2 - Math.sin(direction + Math.PI / 2)
 						* (height / 2), z + getHeight() * 0.5, 0.1, direction
@@ -116,7 +116,7 @@ class Jackal extends ShootingEnemy {
 
 		// draw arm2
 		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction - Math.PI / 2)
 						* (height / 2) + Math.sin(direction) * attackPerc
@@ -124,7 +124,7 @@ class Jackal extends ShootingEnemy {
 						* (1 - attackPerc) + getHeight() * 0.4 * attackPerc, 0,
 				direction - Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 				* (width / 2),
 				y + height / 2 - Math.sin(direction - Math.PI / 2)
 						* (height / 2), z + getHeight() * 0.5, 0.1, direction

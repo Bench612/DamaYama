@@ -133,9 +133,9 @@ class StatsPanel extends JPanel {
 		}
 	}
 
-	public double getDMG() {
+	public int getDMG() {
 		try {
-			return -Math.round(play.getPlayer().totalDamage * 100);
+			return -(int)Math.round(play.getPlayer().totalDamage * 100);
 		} catch (Exception e) {
 			return 0;
 		}

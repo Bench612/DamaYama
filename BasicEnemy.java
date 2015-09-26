@@ -1,4 +1,5 @@
 import drawing.*;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -13,17 +14,17 @@ public class BasicEnemy extends Enemy {
 	}
 
 	public BasicEnemy() {
-		super(1, 40, 1, DamaYama.orange);
+		super(1, 30, 1, DamaYama.orange);
 		color = DamaYama.orange;
 	}
 
 	public void drawSlant(Perspective p) {
 		super.drawSlant(p);
 		// draw head
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
 				width / 2, direction + Math.PI / 4, 4);
 		ArrayList<drawing.Point> bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
 				direction + Math.PI / 4, 4);
 		ArrayList<drawing.Point> top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
@@ -31,24 +32,23 @@ public class BasicEnemy extends Enemy {
 		p.fillShape(bottom);
 
 		// drawBody
-		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2, y + height / 2, z, width / 2 * 0.85,
+		// drawBody
+		p.createNgon(x + width / 2, y + height / 2, z, width / 2 * 0.75,
 				direction + Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
-				width / 2 * 0.85, direction + Math.PI / 4, 4);
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
+				width / 2 * 0.75, direction + Math.PI / 4, 4);
 		top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
-		p.finishConvexPolygon();
 
 		if (attackTime >= 0) {
 			double attackPerc = 1 - (attackTime / (double) maxAttackTime);
 
 			// draw arm1
 			p.startNewConvexPolygon(6);
-			p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+			p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 					* (width / 2) + Math.cos(direction) * attackPerc
 					* attackRange,
 					y + height / 2 - Math.sin(direction + Math.PI / 2)
@@ -57,7 +57,7 @@ public class BasicEnemy extends Enemy {
 					z + (getHeight() * 0.2) * (1 - attackPerc) + getHeight()
 							* 0.4 * attackPerc, 0, direction + Math.PI / 4, 4);
 			bottom = p.getCurrentShape();
-			p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+			p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 					* (width / 2),
 					y + height / 2 - Math.sin(direction + Math.PI / 2)
 							* (height / 2), z + getHeight() * 0.5, 0.1,
@@ -70,7 +70,7 @@ public class BasicEnemy extends Enemy {
 
 			// draw arm2
 			p.startNewConvexPolygon(6);
-			p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+			p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 					* (width / 2) + Math.cos(direction) * attackPerc
 					* attackRange,
 					y + height / 2 - Math.sin(direction - Math.PI / 2)
@@ -79,7 +79,7 @@ public class BasicEnemy extends Enemy {
 					z + (getHeight() * 0.2) * (1 - attackPerc) + getHeight()
 							* 0.4 * attackPerc, 0, direction - Math.PI / 4, 4);
 			bottom = p.getCurrentShape();
-			p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+			p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 					* (width / 2),
 					y + height / 2 - Math.sin(direction - Math.PI / 2)
 							* (height / 2), z + getHeight() * 0.5, 0.1,

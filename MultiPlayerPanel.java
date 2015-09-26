@@ -5,6 +5,7 @@ import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -58,7 +59,7 @@ class MultiPlayerPanel extends BoxHeadPanel {
 			if (addedIntoGame)
 				message = "Please wait... Waiting for other players";
 			else if (doneHosting || !host)
-				message = "Please wait... Adding into game";
+				message = "Please wait... Joining game";
 			else
 				message = "Please wait... Hosting";
 			g.setColor(Color.black);
@@ -92,22 +93,10 @@ class MultiPlayerPanel extends BoxHeadPanel {
 
 	public static final int maxArray = 7;
 
-	public boolean write(boolean[] keys) {
+	protected boolean write(boolean[] keys, int a, int b) {
 		try {
-			FileWriter w = new FileWriter(fileName, true);
-			for (int startIndex = 0; startIndex < keys.length; startIndex += maxArray)
-				write(w, keys, startIndex, startIndex + maxArray);
-			w.close();
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public boolean write(int a, int b) {
-		try {
-			FileWriter w = new FileWriter(fileName, true);
+			FileOutputStream w = new FileOutputStream(fileName, true);
+			write(w, keys);
 			if (a < 0)
 				w.write(negative);
 			else
@@ -126,15 +115,32 @@ class MultiPlayerPanel extends BoxHeadPanel {
 		return false;
 	}
 
+	protected boolean write(boolean[] keys) {
+		try {
+			FileOutputStream w = new FileOutputStream(fileName, true);
+			write(w, keys);
+			w.close();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void write(FileOutputStream w, boolean[] keys) {
+		for (int startIndex = 0; startIndex < keys.length; startIndex += maxArray)
+			write(w, keys, startIndex, startIndex + maxArray);
+	}
+
 	// end index is non inclusive
-	private static void write(FileWriter w, boolean[] keys, int startIndex,
-			int endIndex) {
+	private static void write(FileOutputStream w, boolean[] keys,
+			int startIndex, int endIndex) {
 		if (keys.length < endIndex)
 			endIndex = keys.length;
 		byte number = 0;
 		for (int i = startIndex; i < endIndex; i++) {
 			if (keys[i])
-				number += Math.pow(2, i - startIndex);
+				number += 1 << (i - startIndex);
 		}
 		try {
 			w.write(number);
@@ -146,47 +152,7 @@ class MultiPlayerPanel extends BoxHeadPanel {
 	final static int negative = 0;
 	final static int positive = 1;
 
-	public long readNewDirections(int index, boolean limit) {
-		long timesSlept = 0;
-		closeInputStream();
-		resetInputStream();
-		try {
-			while (inputStream.available() < 4) {
-				closeInputStream();
-				if (timesSlept > 1000 && limit)
-					return timesSlept;
-				try {
-					timesSlept++;
-					timeSinceUpdate += sleep;
-					Thread.sleep(sleep);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				resetInputStream();
-			}
-			try {
-				int a2 = inputStream.read();
-				int a = inputStream.read();
-				int b2 = inputStream.read();
-				int b = inputStream.read();
-				directionX[index] = a;
-				if (a2 == negative)
-					directionX[index] *= -1;
-				directionY[index] = b;
-				if (b2 == negative)
-					directionY[index] *= -1;
-				bytesRead += 4;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		closeInputStream();
-		return timesSlept;
-	}
-
-	public long read(boolean[] allKeys, boolean limit) {
+	protected long read(boolean[] allKeys, boolean limit) {
 		long timesSlept = 0;
 		closeInputStream();
 		resetInputStream();
@@ -205,8 +171,51 @@ class MultiPlayerPanel extends BoxHeadPanel {
 				}
 				resetInputStream();
 			}
-			for (int startIndex = 0; startIndex < allKeys.length; startIndex += maxArray)
-				read(inputStream, allKeys, startIndex, startIndex + maxArray);
+			read(allKeys);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		closeInputStream();
+		return timesSlept;
+	}
+
+	private void read(boolean[] allKeys) {
+		for (int startIndex = 0; startIndex < allKeys.length; startIndex += maxArray)
+			read(inputStream, allKeys, startIndex, startIndex + maxArray);
+	}
+
+	protected long read(boolean[] allKeys, int index, boolean limit) {
+		long timesSlept = 0;
+		closeInputStream();
+		resetInputStream();
+		try {
+			while (inputStream.available() < 4 + Math.ceil(allKeys.length
+					/ (double) maxArray)) {
+				closeInputStream();
+				if (timesSlept > 1000 && limit)
+					return timesSlept;
+				try {
+					timesSlept++;
+					timeSinceUpdate += sleep;
+					Thread.sleep(sleep);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				resetInputStream();
+			}
+			read(allKeys);
+
+			int a2 = inputStream.read();
+			int a = inputStream.read();
+			int b2 = inputStream.read();
+			int b = inputStream.read();
+			directionX[index] = a;
+			if (a2 == negative)
+				directionX[index] *= -1;
+			directionY[index] = b;
+			if (b2 == negative)
+				directionY[index] *= -1;
+			bytesRead += 4;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -223,11 +232,11 @@ class MultiPlayerPanel extends BoxHeadPanel {
 			int number = stream.read();
 			bytesRead++;
 			for (int i = endIndex - 1; i >= startIndex; i--) {
-				if ((number / Math.pow(2, i - startIndex) < 1))
+				if ((number / (1 << i - startIndex) < 1))
 					allKeys[i] = false;
 				else {
 					allKeys[i] = true;
-					number -= Math.pow(2, i - startIndex);
+					number -= (1 << i - startIndex);
 				}
 			}
 		} catch (IOException e) {
@@ -258,7 +267,7 @@ class MultiPlayerPanel extends BoxHeadPanel {
 
 	private boolean writePart() {
 		// writes my current keys
-		while (!write(keys)) {
+		while (!write(keys, newShootDirectionX, newShootDirectionY)) {
 			try {
 				Thread.sleep(sleep);
 			} catch (InterruptedException e) {
@@ -266,24 +275,12 @@ class MultiPlayerPanel extends BoxHeadPanel {
 				return false;
 			}
 		}
-		while (!write(newShootDirectionX, newShootDirectionY)) {
-			try {
-				Thread.sleep(sleep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 		return true;
 	}
 
 	private boolean readPart() {
-		if (read(allKeys[currentUpdatingIndex], true) > 5000 / sleep) {
-			JOptionPane.showMessageDialog(this, "Latency too high!");
-			tryClose();
-			return true;
-		}
-		if (readNewDirections(currentUpdatingIndex, true) > 5000 / sleep) {
-			JOptionPane.showMessageDialog(this, "Latency too high!");
+		if (read(allKeys[currentUpdatingIndex], currentUpdatingIndex, true) > 450 / sleep) {
+			JOptionPane.showMessageDialog(this, "Latency too high or player disconnected!");
 			tryClose();
 			return true;
 		}
@@ -291,6 +288,7 @@ class MultiPlayerPanel extends BoxHeadPanel {
 		return false;
 	}
 
+	@Override
 	public void updatePlayers() {
 		for (int i = 0; i < players.size(); i++) {
 			players.get(i).update(allKeys[i], allPreviousKeys[i],

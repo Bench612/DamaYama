@@ -5,7 +5,7 @@ import java.util.ArrayList;
 class Demon extends ShootingEnemy {
 
 	public Demon() {
-		super(10, 40, 1, DamaYama.blue);
+		super(8, 40, 1, DamaYama.blue);
 		double random = DamaYama.random();
 		if (random > 0.6)
 			weapon = new BasicWeapon(this);
@@ -32,23 +32,21 @@ class Demon extends ShootingEnemy {
 		super.drawSlant(p);
 
 		// drawBody
-		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2, y + height / 2, z, width / 2 * 0.75,
+		p.createNgon(x + width / 2, y + height / 2, z, width / 2 * 0.75,
 				direction + Math.PI / 4, 4);
 		ArrayList<Point> bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.6,
 				width / 2 * 0.75, direction + Math.PI / 4, 4);
 		ArrayList<Point> top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
 		p.fillShape(top);
 		p.fillShape(bottom);
-		p.finishConvexPolygon();
 
 		// draw head
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight() * 0.7,
 				width / 2, direction + Math.PI / 5, 5);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
+		p.createNgon(x + width / 2, y + height / 2, z + getHeight(), width / 2,
 				direction + Math.PI / 5, 5);
 		top = p.getCurrentShape();
 		p.fillForm(p.createForm(top, bottom));
@@ -64,7 +62,7 @@ class Demon extends ShootingEnemy {
 		p.setColor(Color.black);
 		p.setOutline(Color.black);
 		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction + Math.PI / 2)
 						* (height / 2) + Math.sin(direction) * attackPerc
@@ -72,7 +70,7 @@ class Demon extends ShootingEnemy {
 						* (1 - attackPerc) + getHeight() * 0.4 * attackPerc, 0,
 				direction + Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
 				* (width / 2),
 				y + height / 2 - Math.sin(direction + Math.PI / 2)
 						* (height / 2), z + getHeight() * 0.5, 0.1, direction
@@ -85,7 +83,7 @@ class Demon extends ShootingEnemy {
 
 		// draw arm2
 		p.startNewConvexPolygon(6);
-		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 				* (width / 2) + Math.cos(direction) * attackPerc * attackRange,
 				y + height / 2 - Math.sin(direction - Math.PI / 2)
 						* (height / 2) + Math.sin(direction) * attackPerc
@@ -93,7 +91,7 @@ class Demon extends ShootingEnemy {
 						* (1 - attackPerc) + getHeight() * 0.4 * attackPerc, 0,
 				direction - Math.PI / 4, 4);
 		bottom = p.getCurrentShape();
-		p.drawNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+		p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
 				* (width / 2),
 				y + height / 2 - Math.sin(direction - Math.PI / 2)
 						* (height / 2), z + getHeight() * 0.5, 0.1, direction

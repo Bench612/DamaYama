@@ -1,5 +1,7 @@
 import java.util.*;
+
 import drawing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -38,6 +40,11 @@ public class Map {
 					teleports.add((Teleport) spaces[i][b]);
 			}
 		focus = new ArrayList<Space>();
+	}
+
+	public static int convertToIndex(double x) {
+		return (int) Math.floor(x);// the floor part is neccesary for negative
+		// #s
 	}
 
 	public boolean teleport(MovingGameObject object, Teleport original) {
@@ -562,7 +569,6 @@ class MapSavePanel extends DamaPanel implements ActionListener {
 	public static boolean saveMap(Map map, String fileName) {
 		try {
 			FileWriter writer = new FileWriter(fileName);
-			System.out.println("Successful writer");
 			for (int b = 0; b < map.spaces[0].length; b++) {
 				for (int i = 0; i < map.spaces.length; i++)
 					writer.write(map.spaces[i][b].toString()

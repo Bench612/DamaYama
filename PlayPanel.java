@@ -146,6 +146,7 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 		if (!alivePlayerExists())
 			tryClose();
 		else {
+			gameObjects.remove(p);
 			players.set(players.indexOf(p), new Ghost(this, p.index));
 		}
 	}
@@ -242,9 +243,6 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 			else {
 				chatting = false;
 				chatString = chatString.trim();
-				if (chatString.contains(logout))
-					immunity = true;
-				System.out.println(chatString);
 				FileWriter writer = null;
 				for (int tries = 0; tries < 5 && writer == null; tries++) {
 					try {
@@ -263,12 +261,16 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 				}
 			}
 		}
-		setKey(e.getKeyCode(), true);
-		if (e.getKeyCode() == KeyEvent.VK_EQUALS)
-			mainSleepSpeed++;
-		else if (e.getKeyCode() == KeyEvent.VK_MINUS)
-			mainSleepSpeed--;
-		else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+		if (!chatting) {
+			setKey(e.getKeyCode(), true);
+			if (e.getKeyCode() == KeyEvent.VK_EQUALS)
+				mainSleepSpeed++;
+			else if (e.getKeyCode() == KeyEvent.VK_MINUS)
+				mainSleepSpeed--;
+			mainSleepSpeed = Math.max(Math.min(20, mainSleepSpeed), 0);
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 			if (chatting) {
 				if (chatString.length() > 0) {
 					chatString = chatString.substring(0,
@@ -280,7 +282,6 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 			} else
 				drawType = topDown;
 		}
-		mainSleepSpeed = Math.max(Math.min(20, mainSleepSpeed), 0);
 	}
 
 	private void setKey(int key, boolean value) {
@@ -445,7 +446,6 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 	ArrayList<Message> messages = new ArrayList<Message>();
 	int lastPlayerMessage = 0;
 	final static String logout = "minimize";
-	boolean immunity = false;
 
 	public void displayMessage(String s, Color c) {
 		messages.add(new Message(s, c));
@@ -519,5 +519,3 @@ public class PlayPanel extends MapPanel implements Runnable, FocusListener,
 		}
 	}
 }
-
-

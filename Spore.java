@@ -14,7 +14,7 @@ class Spore extends Enemy {
 	}
 
 	protected void startAttack(Player p) {
-		p.changeHealth(-0.4, this);
+		p.changeHealth(-0.2, this);
 		die();
 	}
 
@@ -27,7 +27,7 @@ class Spore extends Enemy {
 
 	public void drawSlant(Perspective p) {
 		super.drawSlant(p);
-		p.drawSphere(x + width / 2, y + height / 2, z + getHeight() / 2,
+		p.fillSphere(x + width / 2, y + height / 2, z + getHeight() / 2,
 				width / 2, direction, 6, 3);
 	}
 

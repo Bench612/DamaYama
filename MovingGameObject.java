@@ -224,8 +224,9 @@ public class MovingGameObject {
 						}
 					}
 				}
-				moveTorward(follow.x + follow.width / 2, follow.y
-						+ follow.height / 2, follow.z);
+				if (follow != null)
+					moveTorward(follow.x + follow.width / 2, follow.y
+							+ follow.height / 2, follow.z);
 			}
 		} else
 			moveTorward(moveTorward);
@@ -531,12 +532,6 @@ public class MovingGameObject {
 				&& Map.getCurrent().spaces[endX][endY].canEnter(this,
 						ignoreHeight);
 	}
-
-	protected static int convertToIndex(double x) {
-		return (int) Math.floor(x);// the floor part is neccesary for negative
-		// #s
-	}
-
 	// this assumes a circular shape
 	public double distanceToLine(double slope, double yIntercept) {
 		return Perspective.distanceToLine(x + width / 2, y + height / 2, slope,
@@ -544,11 +539,11 @@ public class MovingGameObject {
 	}
 
 	public static int getXIndex(double x2) {
-		return convertToIndex(x2);
+		return Map.convertToIndex(x2);
 	}
 
 	public static int getYIndex(double y2) {
-		return convertToIndex(y2);
+		return Map.convertToIndex(y2);
 	}
 
 	public boolean contains(double endX, double endY) {

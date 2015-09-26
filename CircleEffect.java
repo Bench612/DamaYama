@@ -22,7 +22,7 @@ class CircleEffect extends Effect {
 	public void drawSlant(Perspective p){
 		p.setColor(explosionColor);
 		p.setOutline(explosionColor);
-		p.drawDome(x, y, z, radius, 0, 20, 15);
+		p.fillDome(x, y, z, radius, 0, 20, 15);
 		super.drawSlant(p);
 	}
 }

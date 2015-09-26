@@ -11,7 +11,7 @@ import java.io.*;
 import java.awt.*;
 
 public class DamaYama extends JFrame {
-	private static Random random = new Random(0);
+	private static Random random = new Random();
 	public static Color orange = new Color(235, 169, 116);
 	public static Color blue = new Color(65, 173, 214);
 	String username;
@@ -100,7 +100,7 @@ class BasicDama extends DamaYama implements WindowListener {
 			colorsFinal.add(DamaYama.blue);
 			addFocusListener(this);
 			menuItems = new String[] { "Single Player", "Multiplayer",
-					"Map Editor", "Theater", "Exit" };
+					"Map Editor", "Replay", "Exit" };
 			forms = new ArrayList<ArrayList<Shape>>(100);
 			addMouseListener(this);
 			addMouseMotionListener(this);
@@ -151,9 +151,8 @@ class BasicDama extends DamaYama implements WindowListener {
 						previousX = mouseX;
 						previousY = mouseY;
 
-						additionalYOff += 0.15;
-						if (additionalYOff > 220)
-							additionalYOff = 220;
+						rotation += 0.0035;
+						rotation %= Math.PI * 2;
 						Thread.sleep(20);
 						repaint();
 					}
@@ -165,60 +164,76 @@ class BasicDama extends DamaYama implements WindowListener {
 			toStop = false;
 		}
 
-		double additionalYOff = 0;
+		double rotation = 0;
 		int stringHeight;
+
+		final Color faintBlue = new Color(15, 20, 25);
+		final Color faintOrange = new Color(50, 40, 30);
 
 		public void paintComponent(Graphics g) {
 			clearScreen(g);
 			if (perspective == null) {
 				if (getWidth() > 0 && getHeight() > 0) {
 					perspective = new Perspective(0, getHeight(),
-							getWidth() * 5 / 6, getHeight() / 6);
+							getWidth() * 5 / 6, getHeight() / 8);
 				} else {
 					super.paintComponent(g);
 					return;
 				}
 			}
-			perspective.update(g, 0, -200 + additionalYOff, 0, 1, getWidth(),
-					getHeight());
-			perspective.setColor(Color.DARK_GRAY);
-			if (additionalYOff < 201) {
-				for (int x = -90; x < 80; x += 8)
-					for (int y = 0; y <= 200 - (int) Math
-							.floor(additionalYOff / 4) * 4; y += 8) {
-						Map.drawSquare(perspective, x, y, (200 - y) / 50.0, 8);
-						ArrayList<Point> top = perspective.getCurrentShape();
-						Map.drawSquare(perspective, x, y, 0, 8);
-						perspective.drawForm(perspective.createForm(top,
-								perspective.getCurrentShape()));
-					}
+			perspective.update(g, 0, -125, 0, 1, getWidth(), getHeight());
+			double centerX = 5;
+			double centerY = 45;
+			double radius = 35;
+			perspective.setOutline(faintOrange);
+			drawJackal(centerX + Math.cos(rotation) * radius,
+					centerY + Math.sin(rotation) * radius, 0, 4, rotation);
+			drawDemon(centerX + Math.cos(rotation + Math.PI / 2) * radius,
+					centerY + Math.sin(rotation + Math.PI / 2) * radius, 0, 4,
+					rotation + Math.PI / 2);
+			drawSporeParent(
+					centerX + Math.cos(rotation + Math.PI / 4) * radius,
+					centerY + Math.sin(rotation + Math.PI / 4) * radius, 0, 4,
+					rotation + Math.PI / 4);
+			drawBasicEnemy(centerX + Math.cos(rotation + 3 * Math.PI / 4)
+					* radius, centerY + Math.sin(rotation + 3 * Math.PI / 4)
+					* radius, 0, 4, rotation + 3 * Math.PI / 4);
+			drawJackal(centerX + Math.cos(rotation + Math.PI) * radius, centerY
+					+ Math.sin(rotation + Math.PI) * radius, 0, 4, rotation
+					+ Math.PI);
+			drawDemon(centerX + Math.cos(rotation + 3 * Math.PI / 2) * radius,
+					centerY + Math.sin(rotation + 3 * Math.PI / 2) * radius, 0,
+					4, rotation + 3 * Math.PI / 2);
+			drawSporeParent(centerX + Math.cos(rotation + 5 * Math.PI / 4)
+					* radius, centerY + Math.sin(rotation + 5 * Math.PI / 4)
+					* radius, 0, 4, rotation + 5 * Math.PI / 4);
+			drawBasicEnemy(centerX + Math.cos(rotation + 7 * Math.PI / 4)
+					* radius, centerY + Math.sin(rotation + 7 * Math.PI / 4)
+					* radius, 0, 4, rotation + 7 * Math.PI / 4);
+			perspective.setOutline(faintBlue);
+
+			for (int x = 10; x < 100; x += 8) {
+				for (int y = -75; y < 125; y += 8) {
+					perspective.createNgon(x, y, 0, 4, Math.PI / 4, 4);
+					perspective.drawShape(perspective.getCurrentShape());
+				}
 			}
-			// draw a huge ass cone thing
-			double maxHeight = 4;
-			double maxWidth = 50 * 4;
-			double centerX = 0;
-			double centerY = -maxWidth / 2;
-			double z = maxHeight;
-			double width = maxWidth;
-			double limit = 0;
-			if (additionalYOff <= 75)
-				limit = 1 - (additionalYOff / 75);
-			for (; width > maxWidth * limit; width -= 8) {
-				Map.drawSquare(perspective, centerX - width / 2, centerY
-						- width / 2, z, width);
-				z -= 0.2;
-				perspective.drawShape(perspective.getCurrentShape());
+			for (int x = -158; x < 10; x += 8) {
+				for (int y = -75; y < 125; y += 8) {
+					perspective.createNgon(x, y, 0, 4, 0, 4);
+					perspective.drawShape(perspective.getCurrentShape());
+				}
 			}
 			perspective.draw();
 			super.paintComponent(g);
 			if (DamaYama.logo.getWidth(this) > 0) {
 				double scale = maxRadius * 1.5 / DamaYama.logo.getWidth(this);
-				int height = (int) (scale * DamaYama.logo.getHeight(this));
+				int logoHeight = (int) (scale * DamaYama.logo.getHeight(this));
 				// diff sized ratio than regular
 				g.drawImage(DamaYama.logo,
 						(int) (getWidth() / 3.0 - maxRadius),
-						(int) ((getHeight() - height) / 2),
-						(int) (maxRadius * 2), height, this);
+						(int) ((getHeight() - logoHeight) / 2),
+						(int) (maxRadius * 2), logoHeight, this);
 			}
 
 			// now draw the actual menu (finally)
@@ -331,6 +346,214 @@ class BasicDama extends DamaYama implements WindowListener {
 		public void mouseMoved(MouseEvent e) {
 			updateMouse(e);
 		}
+
+		private void drawBasicEnemy(double x, double y, double z, double width,
+				double direction) {
+			Perspective p = perspective;
+			double height = width;
+			// draw head
+			p.createNgon(x + width / 2, y + height / 2, z + width * 2 * 0.7,
+					width / 2, direction + Math.PI / 4, 4);
+			ArrayList<drawing.Point> bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2, y + height / 2, z + width * 2,
+					width / 2, direction + Math.PI / 4, 4);
+			ArrayList<drawing.Point> top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			// drawBody
+			p.createNgon(x + width / 2, y + height / 2, z, width / 2 * 0.75,
+					direction + Math.PI / 4, 4);
+			bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2, y + height / 2, z + width * 2 * 0.6,
+					width / 2 * 0.75, direction + Math.PI / 4, 4);
+			top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+		}
+
+		private void drawSporeParent(double x, double y, double z,
+				double width, double direction) {
+
+			Perspective p = perspective;
+			double height = width;
+
+			p.createNgon(x + width / 2, y + height / 2, z, width / 2.5,
+					direction + Math.PI / 4, 4);
+			ArrayList<Point> bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2, y + height / 2, z + (width * 2) * 0.5,
+					width / 2 * 0.25, direction + Math.PI / 4, 4);
+			ArrayList<Point> top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			p.drawSphere(x + width / 2, y + height / 2, z + (width * 2) * 0.8,
+					width / 2, direction + Math.PI / 4, 8, 4);
+
+			p.drawSphere(x + width / 2 + Math.cos(direction + 2.6) * width
+					* 0.3387, y + height / 2 + Math.sin(direction + 2.6)
+					* height * 0.3387, z + (width * 2) * 0.8, width / 4,
+					direction + Math.PI / 4, 8, 4);
+			p.drawSphere(x + width / 2 + Math.cos(direction - 2.6) * width
+					* 0.387, y + height / 2 + Math.sin(direction - 2.6)
+					* height * 0.387, z + (width * 2) * 0.8, width / 4,
+					direction + Math.PI / 4, 8, 4);
+			p.drawSphere(x + width / 2 + Math.cos(direction + Math.PI / 4)
+					* width * 0.282,
+					y + height / 2 + Math.sin(direction + Math.PI / 4) * height
+							* 0.282, z + (width * 2) * 0.8 - height * 0.2,
+					width / 4, direction + Math.PI / 4, 8, 4);
+			p.drawSphere(x + width / 2 + Math.cos(direction - 0.52) * width
+					* 0.394, y + height / 2 + Math.sin(direction - 0.52)
+					* height * 0.394, z + (width * 2) * 0.8 + height * 0.3,
+					width / 4, direction + Math.PI / 4, 8, 4);
+		}
+
+		private void drawDemon(double x, double y, double z, double width,
+				double direction) {
+
+			Perspective p = perspective;
+			double height = width;
+			double attackRange = width / 2;
+
+			// drawBody
+			p.createNgon(x + width / 2, y + height / 2, z, width / 2 * 0.75,
+					direction + Math.PI / 4, 4);
+			ArrayList<Point> bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2, y + height / 2, z + (width * 2) * 0.6,
+					width / 2 * 0.75, direction + Math.PI / 4, 4);
+			ArrayList<Point> top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			// draw head
+			p.createNgon(x + width / 2, y + height / 2, z + (width * 2) * 0.7,
+					width / 2, direction + Math.PI / 5, 5);
+			bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2, y + height / 2, z + (width * 2),
+					width / 2, direction + Math.PI / 5, 5);
+			top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			double attackPerc = 0;
+
+			// draw arm1
+			p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+					* (width / 2) + Math.cos(direction) * attackPerc
+					* attackRange,
+					y + height / 2 - Math.sin(direction + Math.PI / 2)
+							* (height / 2) + Math.sin(direction) * attackPerc
+							* attackRange,
+					z + ((width * 2) * 0.2) * (1 - attackPerc) + (width * 2)
+							* 0.4 * attackPerc, 0, direction + Math.PI / 4, 4);
+			bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+					* (width / 2),
+					y + height / 2 - Math.sin(direction + Math.PI / 2)
+							* (height / 2), z + (width * 2) * 0.5, 0.1,
+					direction + Math.PI / 4, 4);
+			top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			// draw arm2
+			p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+					* (width / 2) + Math.cos(direction) * attackPerc
+					* attackRange,
+					y + height / 2 - Math.sin(direction - Math.PI / 2)
+							* (height / 2) + Math.sin(direction) * attackPerc
+							* attackRange,
+					z + ((width * 2) * 0.2) * (1 - attackPerc) + (width * 2)
+							* 0.4 * attackPerc, 0, direction - Math.PI / 4, 4);
+			bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+					* (width / 2),
+					y + height / 2 - Math.sin(direction - Math.PI / 2)
+							* (height / 2), z + (width * 2) * 0.5, 0.1,
+					direction - Math.PI / 4, 4);
+			top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+		}
+
+		private void drawJackal(double x, double y, double z, double width,
+				double direction) {
+
+			Perspective p = perspective;
+			double height = width;
+			double attackRange = width / 2;
+
+			// draw head
+			p.createNgon(x + width / 2, y + height / 2, z + (width * 2) * 0.8,
+					width / 2, direction, 3);
+			ArrayList<Point> bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2, y + height / 2, z + (width * 2),
+					width / 2, direction, 3);
+			ArrayList<Point> top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			// drawBody
+			p.createNgon(x + width / 2, y + height / 2, z, width / 4 * 0.75,
+					direction + Math.PI / 4, 8);
+			bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2, y + height / 2, z + (width * 2) * 0.6,
+					width / 4 * 0.75, direction + Math.PI / 4, 8);
+			top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			double attackPerc = 0;
+			// draw arm1
+			p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+					* (width / 2) + Math.cos(direction) * attackPerc
+					* attackRange,
+					y + height / 2 - Math.sin(direction + Math.PI / 2)
+							* (height / 2) + Math.sin(direction) * attackPerc
+							* attackRange,
+					z + ((width * 2) * 0.2) * (1 - attackPerc) + (width * 2)
+							* 0.4 * attackPerc, 0, direction + Math.PI / 4, 4);
+			bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2 + Math.cos(direction + Math.PI / 2)
+					* (width / 2),
+					y + height / 2 - Math.sin(direction + Math.PI / 2)
+							* (height / 2), z + (width * 2) * 0.5, 0.1,
+					direction + Math.PI / 4, 4);
+			top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			// draw arm2
+			p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+					* (width / 2) + Math.cos(direction) * attackPerc
+					* attackRange,
+					y + height / 2 - Math.sin(direction - Math.PI / 2)
+							* (height / 2) + Math.sin(direction) * attackPerc
+							* attackRange,
+					z + ((width * 2) * 0.2) * (1 - attackPerc) + (width * 2)
+							* 0.4 * attackPerc, 0, direction - Math.PI / 4, 4);
+			bottom = p.getCurrentShape();
+			p.createNgon(x + width / 2 + Math.cos(direction - Math.PI / 2)
+					* (width / 2),
+					y + height / 2 - Math.sin(direction - Math.PI / 2)
+							* (height / 2), z + (width * 2) * 0.5, 0.1,
+					direction - Math.PI / 4, 4);
+			top = p.getCurrentShape();
+			p.drawForm(p.createForm(top, bottom));
+
+			// draw shield
+			p.startNewShape(x + width / 2 + Math.cos(direction + Math.PI / 4)
+					* (width / 2 + 0.01),
+					y + height / 2 - Math.sin(direction + Math.PI / 4)
+							* (height / 2 + 0.01), z, 4);
+			p.addPoint(p.getScreenPoint(
+					x + width / 2 + Math.cos(direction + Math.PI / 4)
+							* (width / 2 + 0.01),
+					y + height / 2 - Math.sin(direction + Math.PI / 4)
+							* (height / 2 + 0.01), z + (width * 2) * 0.6));
+			p.addPoint(p.getScreenPoint(
+					x + width / 2 + Math.cos(direction - Math.PI / 4)
+							* (width / 2 + 0.01),
+					y + height / 2 - Math.sin(direction - Math.PI / 4)
+							* (height / 2 + 0.01), z + (width * 2) * 0.6));
+			p.addPoint(p.getScreenPoint(
+					x + width / 2 + Math.cos(direction - Math.PI / 4)
+							* (width / 2 + 0.01),
+					y + height / 2 - Math.sin(direction - Math.PI / 4)
+							* (height / 2 + 0.01), z));
+			p.drawShape(p.getCurrentShape());
+		}
 	}
 
 	public void windowActivated(WindowEvent e) {
@@ -353,6 +576,7 @@ class BasicDama extends DamaYama implements WindowListener {
 
 	public void windowOpened(WindowEvent e) {
 	}
+
 }
 
 class DamaPanel extends JPanel {
@@ -428,10 +652,10 @@ class ShinyPanel extends DamaPanel {
 
 		public Particle(double angle, double x1, double y1, Color c, Color c2,
 				double velocityOffX, double velocityOffY) {
-			startColor = new Color(colorPart(c.getRed()),
-					colorPart(c.getGreen()), colorPart(c.getBlue()));
-			finalColor = new Color(colorPart(c2.getRed()),
-					colorPart(c2.getGreen()), colorPart(c2.getBlue()));
+			startColor = new Color(baseColorPart(c.getRed()),
+					baseColorPart(c.getGreen()), baseColorPart(c.getBlue()));
+			finalColor = new Color(baseColorPart(c2.getRed()),
+					baseColorPart(c2.getGreen()), baseColorPart(c2.getBlue()));
 			time = (int) (Math.random() * 35 + 70);
 			startTime = (int) time;
 			velocityX = Math.cos(angle) * initialVelocity + velocityOffX;
@@ -444,8 +668,7 @@ class ShinyPanel extends DamaPanel {
 			double frac = time / startTime;
 			double oppFrac = 1 - frac;
 			return (int) Math.min(
-					Math.max(((start * frac + finalC * oppFrac) * frac), 0),
-					255);
+					Math.max((start * frac + finalC * oppFrac), 0), 255);
 		}
 
 		int previousX;
@@ -464,7 +687,7 @@ class ShinyPanel extends DamaPanel {
 			g.setColor(new Color(getColorPart(startColor.getRed(),
 					finalColor.getRed()), getColorPart(startColor.getGreen(),
 					finalColor.getGreen()), getColorPart(startColor.getBlue(),
-					finalColor.getBlue())));
+					finalColor.getBlue()), getColorPart(255, 0)));
 			g.drawLine((int) x, (int) y, previousX, previousY);
 		}
 	}
@@ -476,7 +699,7 @@ class ShinyPanel extends DamaPanel {
 	double initialVelocity = 1;
 	static int colorRange = 120;
 
-	public static int colorPart(int value) {
+	public static int baseColorPart(int value) {
 		return (int) Math.min(Math.max(
 				(Math.random() * colorRange + value - colorRange / 2), 0), 255);
 	}
